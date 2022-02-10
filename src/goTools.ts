@@ -21,7 +21,7 @@ export interface Tool {
 	importPath: string;
 	modulePath: string;
 	isImportant: boolean;
-	replacedByGopls?: boolean;
+	replacedByGoplsp?: boolean;
 	description: string;
 
 	// If true, consider prerelease version in preview mode
@@ -118,11 +118,11 @@ export function isGocode(tool: Tool): boolean {
 export function getConfiguredTools(
 	goVersion: GoVersion,
 	goConfig: { [key: string]: any },
-	goplsConfig: { [key: string]: any }
+	goplspConfig: { [key: string]: any }
 ): Tool[] {
-	// If language server is enabled, don't suggest tools that are replaced by gopls.
+	// If language server is enabled, don't suggest tools that are replaced by goplsp.
 	// TODO(github.com/golang/vscode-go/issues/388): decide what to do when
-	// the go version is no longer supported by gopls while the legacy tools are
+	// the go version is no longer supported by goplsp while the legacy tools are
 	// no longer working (or we remove the legacy language feature providers completely).
 	const useLanguageServer = goConfig['useLanguageServer'] && goVersion.gt('1.11');
 
@@ -130,7 +130,7 @@ export function getConfiguredTools(
 	function maybeAddTool(name: string) {
 		const tool = allToolsInformation[name];
 		if (tool) {
-			if (!useLanguageServer || !tool.replacedByGopls) {
+			if (!useLanguageServer || !tool.replacedByGoplsp) {
 				tools.push(tool);
 			}
 		}
@@ -182,17 +182,17 @@ export function getConfiguredTools(
 	}
 
 	// Add the linter that was chosen by the user, but don't add staticcheck
-	// if it is enabled via gopls.
-	const goplsStaticheckEnabled = useLanguageServer && goplsStaticcheckEnabled(goConfig, goplsConfig);
-	if (goConfig['lintTool'] !== 'staticcheck' || !goplsStaticheckEnabled) {
+	// if it is enabled via goplsp.
+	const goplspStaticheckEnabled = useLanguageServer && goplspStaticcheckEnabled(goConfig, goplspConfig);
+	if (goConfig['lintTool'] !== 'staticcheck' || !goplspStaticheckEnabled) {
 		maybeAddTool(goConfig['lintTool']);
 	}
 
 	// Add the language server if the user has chosen to do so.
-	// Even though we arranged this to run after the first attempt to start gopls
-	// this is still useful if we've fail to start gopls.
+	// Even though we arranged this to run after the first attempt to start goplsp
+	// this is still useful if we've fail to start goplsp.
 	if (useLanguageServer) {
-		maybeAddTool('gopls');
+		maybeAddTool('goplsp');
 	}
 
 	if (goLiveErrorsEnabled()) {
@@ -202,14 +202,14 @@ export function getConfiguredTools(
 	return tools;
 }
 
-export function goplsStaticcheckEnabled(
+export function goplspStaticcheckEnabled(
 	goConfig: { [key: string]: any },
-	goplsConfig: { [key: string]: any }
+	goplspConfig: { [key: string]: any }
 ): boolean {
 	if (
 		goConfig['useLanguageServer'] !== true ||
-		goplsConfig['ui.diagnostic.staticcheck'] === false ||
-		(goplsConfig['ui.diagnostic.staticcheck'] === undefined && goplsConfig['staticcheck'] !== true)
+		goplspConfig['ui.diagnostic.staticcheck'] === false ||
+		(goplspConfig['ui.diagnostic.staticcheck'] === undefined && goplspConfig['staticcheck'] !== true)
 	) {
 		return false;
 	}

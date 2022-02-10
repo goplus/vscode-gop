@@ -13,7 +13,7 @@ import { getGoConfig } from './config';
 import { formatGoVersion, GoEnvironmentOption, terminalCreationListener } from './goEnvironmentStatus';
 import {
 	buildLanguageServerConfig,
-	getLocalGoplsVersion,
+	getLocalGoplspVersion,
 	languageServerIsRunning,
 	serverOutputChannel
 } from './goLanguageServer';
@@ -59,17 +59,17 @@ export async function expandGoStatusBar() {
 		{ label: 'Choose Go Environment' }
 	];
 
-	// Get the gopls configuration
+	// Get the goplsp configuration
 	const goConfig = getGoConfig();
 	const cfg = buildLanguageServerConfig(goConfig);
-	if (languageServerIsRunning && cfg.serverName === 'gopls') {
-		const goplsVersion = await getLocalGoplsVersion(cfg);
-		options.push({ label: `${languageServerIcon}Open 'gopls' trace`, description: `${goplsVersion}` });
+	if (languageServerIsRunning && cfg.serverName === 'goplsp') {
+		const goplspVersion = await getLocalGoplspVersion(cfg);
+		options.push({ label: `${languageServerIcon}Open 'goplsp' trace`, description: `${goplspVersion}` });
 	}
 	if (!languageServerIsRunning && !cfg.serverName && goConfig['useLanguageServer'] === true) {
 		options.push({
 			label: 'Install Go Language Server',
-			description: `${languageServerErrorIcon}'gopls' is required but missing`
+			description: `${languageServerErrorIcon}'goplsp' is required but missing`
 		});
 	}
 
@@ -92,8 +92,8 @@ export async function expandGoStatusBar() {
 						serverOutputChannel.show();
 					}
 					break;
-				case 'Install Go Language Server':
-					vscode.commands.executeCommand('go.tools.install', [allToolsInformation['gopls']]);
+				case 'Install Goplus Language Server':
+					vscode.commands.executeCommand('go.tools.install', [allToolsInformation['goplsp']]);
 					break;
 				case "Open 'go.mod'":
 					const openPath = vscode.Uri.file(item.description);
@@ -126,7 +126,7 @@ export async function initGoStatusBar() {
 	goEnvStatusbarItem.text = goOption.label;
 	goEnvStatusbarItem.command = 'go.environment.status';
 
-	// Add an icon to indicate that the 'gopls' server is running.
+	// Add an icon to indicate that the 'goplsp' server is running.
 	// Assume if it is configured it is already running, since the
 	// icon will be updated on an attempt to start.
 	const goConfig = getGoConfig();
@@ -141,7 +141,7 @@ export function updateLanguageServerIconGoStatusBar(started: boolean, enabled: b
 	}
 
 	// Split the existing goEnvStatusbarItem.text into the version string part and
-	// the gopls icon part.
+	// the goplsp icon part.
 	let text = goEnvStatusbarItem.text;
 	let icon = '';
 	if (text.endsWith(languageServerIcon)) {

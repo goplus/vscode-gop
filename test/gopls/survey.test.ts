@@ -10,10 +10,10 @@ import goLanguageServer = require('../../src/goLanguageServer');
 import goSurvey = require('../../src/goSurvey');
 import goDeveloperSurvey = require('../../src/goDeveloperSurvey');
 
-suite('gopls survey tests', () => {
+suite('goplsp survey tests', () => {
 	test('prompt for survey', () => {
 		// global state -> offer survey
-		const testCases: [goSurvey.GoplsSurveyConfig, boolean][] = [
+		const testCases: [goSurvey.GoplspSurveyConfig, boolean][] = [
 			// User who is activating the extension for the first time.
 			[{}, true],
 			// User who has already taken the survey.
@@ -186,7 +186,7 @@ suite('developer survey tests', () => {
 	});
 });
 
-suite('gopls opt out', () => {
+suite('goplsp opt out', () => {
 	let sandbox: sinon.SinonSandbox;
 
 	setup(() => {
@@ -197,7 +197,7 @@ suite('gopls opt out', () => {
 		sandbox.restore();
 	});
 
-	const testCases: [goLanguageServer.GoplsOptOutConfig, string, number][] = [
+	const testCases: [goLanguageServer.GoplspOptOutConfig, string, number][] = [
 		// No saved config, different choices in the first dialog box.
 		[{}, 'Enable', 1],
 		[{}, 'Not now', 1],
@@ -212,11 +212,11 @@ suite('gopls opt out', () => {
 	testCases.map(async ([testConfig, choice, wantCount], i) => {
 		test(`opt out: ${i}`, async () => {
 			const stub = sandbox.stub(vscode.window, 'showInformationMessage').resolves({ title: choice });
-			const getGoplsOptOutConfigStub = sandbox.stub(goLanguageServer, 'getGoplsOptOutConfig').returns(testConfig);
+			const getGoplspOptOutConfigStub = sandbox.stub(goLanguageServer, 'getGoplspOptOutConfig').returns(testConfig);
 
-			await goLanguageServer.promptAboutGoplsOptOut(false);
+			await goLanguageServer.promptAboutGoplspOptOut(false);
 			assert.strictEqual(stub.callCount, wantCount);
-			sandbox.assert.called(getGoplsOptOutConfigStub);
+			sandbox.assert.called(getGoplspOptOutConfigStub);
 		});
 	});
 });

@@ -74,7 +74,7 @@
 			"preLaunchTask": "npm: watch"
 		},
 		{
-			"name": "Launch Extension Tests with Gopls",
+			"name": "Launch Extension Tests with Goplsp",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",

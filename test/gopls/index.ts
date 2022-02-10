@@ -20,7 +20,7 @@ export function run(): Promise<void> {
 	const testsRoot = path.resolve(__dirname, '..');
 
 	return new Promise((c, e) => {
-		glob('gopls/**.test.js', { cwd: testsRoot }, (err, files) => {
+		glob('goplsp/**.test.js', { cwd: testsRoot }, (err, files) => {
 			if (err) {
 				return e(err);
 			}

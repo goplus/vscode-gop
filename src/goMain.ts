@@ -9,7 +9,7 @@
 'use strict';
 
 import * as path from 'path';
-import { getGoConfig, getGoplsConfig, IsInCloudIDE } from './config';
+import { getGoConfig, getGoplspConfig, IsInCloudIDE } from './config';
 import { browsePackages } from './goBrowsePackage';
 import { buildCode } from './goBuild';
 import { check, notifyIfGeneratedFile, removeTestStatus } from './goCheck';
@@ -173,14 +173,14 @@ export async function activate(ctx: vscode.ExtensionContext): Promise<ExtensionA
 		if (experimentalFeatures['documentLink'] === false) {
 			vscode.window
 				.showErrorMessage(`The 'go.languageServerExperimentalFeature.documentLink' setting is now deprecated.
-Please use '"gopls": {"ui.navigation.importShortcut": "Definition" }' instead.
+Please use '"goplsp": {"ui.navigation.importShortcut": "Definition" }' instead.
 See [the settings doc](https://github.com/golang/vscode-go/blob/master/docs/settings.md#uinavigationimportshortcut) for more details.`);
 		}
 		const promptKey = 'promptedLanguageServerExperimentalFeatureDeprecation';
 		const prompted = getFromGlobalState(promptKey, false);
 		if (!prompted && experimentalFeatures['diagnostics'] === false) {
 			const msg = `The 'go.languageServerExperimentalFeature.diagnostics' setting will be deprecated soon.
-If you would like additional configuration for diagnostics from gopls, please see and response to [Issue 50](https://github.com/golang/vscode-go/issues/50).`;
+If you would like additional configuration for diagnostics from goplsp, please see and response to [Issue 50](https://github.com/golang/vscode-go/issues/50).`;
 			const selected = await vscode.window.showInformationMessage(msg, "Don't show again");
 			switch (selected) {
 				case "Don't show again":
@@ -659,9 +659,9 @@ If you would like additional configuration for diagnostics from gopls, please se
 				return;
 			}
 			vscode.commands.executeCommand('gc_details', doc).then(undefined, (reason0) => {
-				vscode.commands.executeCommand('gopls.gc_details', doc).then(undefined, (reason1) => {
+				vscode.commands.executeCommand('goplsp.gc_details', doc).then(undefined, (reason1) => {
 					vscode.window.showErrorMessage(
-						`"Go: Toggle gc details" command failed: gc_details:${reason0} gopls_gc_details:${reason1}`
+						`"Go: Toggle gc details" command failed: gc_details:${reason0} goplsp_gc_details:${reason1}`
 					);
 				});
 			});
@@ -939,7 +939,7 @@ async function getConfiguredGoToolsCommand() {
 	outputChannel.appendLine('');
 
 	const goVersion = await getGoVersion();
-	const allTools = getConfiguredTools(goVersion, getGoConfig(), getGoplsConfig());
+	const allTools = getConfiguredTools(goVersion, getGoConfig(), getGoplspConfig());
 	const goVersionTooOld = goVersion?.lt('1.12') || false;
 
 	outputChannel.appendLine(`\tgo:\t${goVersion?.binaryPath}: ${goVersion?.version}`);

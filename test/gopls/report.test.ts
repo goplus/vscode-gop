@@ -4,9 +4,9 @@
  *--------------------------------------------------------*/
 
 import assert from 'assert';
-import { sanitizeGoplsTrace } from '../../src/goLanguageServer';
+import { sanitizeGoplspTrace } from '../../src/goLanguageServer';
 
-suite('gopls issue report tests', () => {
+suite('goplsp issue report tests', () => {
 	test('sanitize user trace', () => {
 		interface TestCase {
 			name: string;
@@ -38,16 +38,16 @@ suite('gopls issue report tests', () => {
 		];
 
 		testCases.map((tc: TestCase) => {
-			const { sanitizedLog, failureReason } = sanitizeGoplsTrace(tc.in);
+			const { sanitizedLog, failureReason } = sanitizeGoplspTrace(tc.in);
 			assert.strictEqual(
 				sanitizedLog,
 				tc.want,
-				`sanitizeGoplsTrace(${tc.name}) returned unexpected sanitizedLog result`
+				`sanitizeGoplspTrace(${tc.name}) returned unexpected sanitizedLog result`
 			);
 			assert.strictEqual(
 				failureReason,
 				tc.wantReason,
-				`sanitizeGoplsTrace(${tc.name}) returned unexpected failureReason result`
+				`sanitizeGoplspTrace(${tc.name}) returned unexpected failureReason result`
 			);
 		});
 	});
@@ -280,8 +280,8 @@ at Socket. (/Users/Gopher/.vscode/extensions/golang.go-0.16.2/dist/goMain.js:280
 at Socket.emit (events.js:208:15)
 at Pipe. (net.js:588:12)
 [Info - 12:50:26 PM] 2020/09/16 12:50:26 Build info
-golang.org/x/tools/gopls v0.5.0
-golang.org/x/tools/gopls@v0.5.0 h1:XEmO9RylgmaXp33iGrWfCGopVYDGBmLy+KmsIsfIo8Y=
+golang.org/x/tools/goplsp v0.5.0
+golang.org/x/tools/goplsp@v0.5.0 h1:XEmO9RylgmaXp33iGrWfCGopVYDGBmLy+KmsIsfIo8Y=
 github.com/BurntSushi/toml@v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/google/go-cmp@v0.5.1 h1:JFrFEBb2xKufg6XkJsJr+WbKb4FQlURi5RUcBveYu9k=
 github.com/sergi/go-diff@v1.1.0 h1:we8PVUC3FE2uYfodKH/nBHMSetSfHDR6scGdBi+erh0=
@@ -320,12 +320,12 @@ created by golang.org/x/tools/internal/jsonrpc2.AsyncHandler.func1
 const traceFromIssueVSCodeGo572 = `
 
 [Error - 下午9:23:45] Starting client failed
-Message: unsupported URI scheme: (gopls only supports file URIs)
+Message: unsupported URI scheme: (goplsp only supports file URIs)
 Code: 0
 [Info - 下午9:23:45] 2020/08/25 21:23:45 server shutdown without initialization
 
 `;
 
 const sanitizedTraceFromIssuVSCodeGo572 = `Starting client failed
-Message: unsupported URI scheme: (gopls only supports file URIs)
+Message: unsupported URI scheme: (goplsp only supports file URIs)
 Code: 0`;

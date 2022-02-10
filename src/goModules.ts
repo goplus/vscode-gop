@@ -114,7 +114,7 @@ export async function promptToUpdateToolForModules(
 				case 'switchFormatToolToGoimports':
 					goConfig.update('formatTool', 'goimports', vscode.ConfigurationTarget.Global);
 					break;
-				case 'gopls':
+				case 'goplsp':
 					if (goConfig.get('useLanguageServer') === false) {
 						goConfig.update('useLanguageServer', true, vscode.ConfigurationTarget.Global);
 					}

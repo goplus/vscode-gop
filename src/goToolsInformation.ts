@@ -10,7 +10,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		importPath: 'github.com/mdempsky/gocode',
 		modulePath: 'github.com/mdempsky/gocode',
 		isImportant: true,
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		description: 'Auto-completion, does not work with modules',
 		close: gocodeClose
 	},
@@ -19,7 +19,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		importPath: 'github.com/stamblerre/gocode',
 		modulePath: 'github.com/stamblerre/gocode',
 		isImportant: true,
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		description: 'Auto-completion, works with modules',
 		minimumGoVersion: semver.coerce('1.11')
 	},
@@ -27,7 +27,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'go-outline',
 		importPath: 'github.com/ramya-rao-a/go-outline',
 		modulePath: 'github.com/ramya-rao-a/go-outline',
-		replacedByGopls: false, // TODO(github.com/golang/vscode-go/issues/1020): replace with Gopls.
+		replacedByGoplsp: false, // TODO(github.com/golang/vscode-go/issues/1020): replace with Goplsp.
 		isImportant: true,
 		description: 'Go to symbol in file' // GoDocumentSymbolProvider, used by 'run test' codelens
 	},
@@ -35,7 +35,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'go-symbols',
 		importPath: 'github.com/acroca/go-symbols',
 		modulePath: 'github.com/acroca/go-symbols',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Go to symbol in workspace'
 	},
@@ -43,7 +43,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'guru',
 		importPath: 'golang.org/x/tools/cmd/guru',
 		modulePath: 'golang.org/x/tools',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Find all references and Go to implementation of symbols'
 	},
@@ -51,7 +51,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'gorename',
 		importPath: 'golang.org/x/tools/cmd/gorename',
 		modulePath: 'golang.org/x/tools',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Rename symbols'
 	},
@@ -59,7 +59,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'gomodifytags',
 		importPath: 'github.com/fatih/gomodifytags',
 		modulePath: 'github.com/fatih/gomodifytags',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: false,
 		description: 'Modify tags on structs'
 	},
@@ -67,7 +67,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'goplay',
 		importPath: 'github.com/haya14busa/goplay/cmd/goplay',
 		modulePath: 'github.com/haya14busa/goplay',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: false,
 		description: 'The Go playground'
 	},
@@ -75,7 +75,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'impl',
 		importPath: 'github.com/josharian/impl',
 		modulePath: 'github.com/josharian/impl',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: false,
 		description: 'Stubs for interfaces'
 	},
@@ -83,7 +83,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'gotype-live',
 		importPath: 'github.com/tylerb/gotype-live',
 		modulePath: 'github.com/tylerb/gotype-live',
-		replacedByGopls: true, // TODO(github.com/golang/vscode-go/issues/1021): recommend users to turn off.
+		replacedByGoplsp: true, // TODO(github.com/golang/vscode-go/issues/1021): recommend users to turn off.
 		isImportant: false,
 		description: 'Show errors as you type'
 	},
@@ -91,7 +91,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'godef',
 		importPath: 'github.com/rogpeppe/godef',
 		modulePath: 'github.com/rogpeppe/godef',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: true,
 		description: 'Go to definition'
 	},
@@ -99,7 +99,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'gogetdoc',
 		importPath: 'github.com/zmb3/gogetdoc',
 		modulePath: 'github.com/zmb3/gogetdoc',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: true,
 		description: 'Go to definition & text shown on hover'
 	},
@@ -107,7 +107,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'gofumports',
 		importPath: 'mvdan.cc/gofumpt/gofumports',
 		modulePath: 'mvdan.cc/gofumpt',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Formatter',
 		defaultVersion: 'v0.1.1'
@@ -116,7 +116,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'gofumpt',
 		importPath: 'mvdan.cc/gofumpt',
 		modulePath: 'mvdan.cc/gofumpt',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Formatter'
 	},
@@ -124,7 +124,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'goimports',
 		importPath: 'golang.org/x/tools/cmd/goimports',
 		modulePath: 'golang.org/x/tools',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: true,
 		description: 'Formatter'
 	},
@@ -132,7 +132,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'goreturns',
 		importPath: 'github.com/sqs/goreturns',
 		modulePath: 'github.com/sqs/goreturns',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: true,
 		description: 'Formatter'
 	},
@@ -140,7 +140,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'goformat',
 		importPath: 'winterdrache.de/goformat/goformat',
 		modulePath: 'winterdrache.de/goformat/goformat',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Formatter'
 	},
@@ -148,17 +148,17 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'gotests',
 		importPath: 'github.com/cweill/gotests/gotests',
 		modulePath: 'github.com/cweill/gotests',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: false,
 		description: 'Generate unit tests',
 		minimumGoVersion: semver.coerce('1.9')
 	},
-	// TODO(github.com/golang/vscode-go/issues/189): consider disabling lint when gopls is turned on.
+	// TODO(github.com/golang/vscode-go/issues/189): consider disabling lint when goplsp is turned on.
 	'golint': {
 		name: 'golint',
 		importPath: 'golang.org/x/lint/golint',
 		modulePath: 'golang.org/x/lint',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: false,
 		description: 'Linter',
 		minimumGoVersion: semver.coerce('1.9')
@@ -167,7 +167,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'staticcheck',
 		importPath: 'honnef.co/go/tools/cmd/staticcheck',
 		modulePath: 'honnef.co/go/tools',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: true,
 		description: 'Linter'
 	},
@@ -175,7 +175,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'golangci-lint',
 		importPath: 'github.com/golangci/golangci-lint/cmd/golangci-lint',
 		modulePath: 'github.com/golangci/golangci-lint',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: true,
 		description: 'Linter'
 	},
@@ -186,11 +186,11 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		isImportant: true,
 		description: 'Linter'
 	},
-	'gopls': {
-		name: 'gopls',
-		importPath: 'golang.org/x/tools/gopls',
-		modulePath: 'golang.org/x/tools/gopls',
-		replacedByGopls: false, // lol
+	'goplsp': {
+		name: 'goplsp',
+		importPath: 'https://github.com/goplus/tools/goplsp',
+		modulePath: 'https://github.com/goplus/tools/goplsp',
+		replacedByGoplsp: false, // lol
 		isImportant: true,
 		description: 'Language Server from Google',
 		usePrereleaseInPreviewMode: true,
@@ -204,7 +204,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'dlv',
 		importPath: 'github.com/go-delve/delve/cmd/dlv',
 		modulePath: 'github.com/go-delve/delve',
-		replacedByGopls: false,
+		replacedByGoplsp: false,
 		isImportant: true,
 		description: 'Go debugger (Delve)',
 		latestVersion: semver.parse('v1.6.1'), // minimum version that supports DAP
@@ -215,7 +215,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'fillstruct',
 		importPath: 'github.com/davidrjenni/reftools/cmd/fillstruct',
 		modulePath: 'github.com/davidrjenni/reftools',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Fill structs with defaults'
 	},
@@ -223,7 +223,7 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		name: 'godoctor',
 		importPath: 'github.com/godoctor/godoctor',
 		modulePath: 'github.com/godoctor/godoctor',
-		replacedByGopls: true,
+		replacedByGoplsp: true,
 		isImportant: false,
 		description: 'Extract to functions and variables'
 	}

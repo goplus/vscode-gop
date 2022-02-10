@@ -5,12 +5,12 @@
  *--------------------------------------------------------*/
 
 import assert from 'assert';
-import { getGoplsConfig } from '../../src/config';
+import { getGoplspConfig } from '../../src/config';
 import * as lsp from '../../src/goLanguageServer';
 
-suite('gopls configuration tests', () => {
-	test('filterGoplsDefaultConfigValues', async () => {
-		const defaultGoplsConfig = getGoplsConfig();
+suite('goplsp configuration tests', () => {
+	test('filterGoplspDefaultConfigValues', async () => {
+		const defaultGoplspConfig = getGoplspConfig();
 		interface TestCase {
 			name: string;
 			section: string;
@@ -19,15 +19,15 @@ suite('gopls configuration tests', () => {
 		}
 		const testCases: TestCase[] = [
 			{
-				name: 'user set no gopls settings',
-				section: 'gopls',
-				input: defaultGoplsConfig,
+				name: 'user set no goplsp settings',
+				section: 'goplsp',
+				input: defaultGoplspConfig,
 				want: {}
 			},
 			{
-				name: 'user set some gopls settings',
-				section: 'gopls',
-				input: Object.assign({}, defaultGoplsConfig, {
+				name: 'user set some goplsp settings',
+				section: 'goplsp',
+				input: Object.assign({}, defaultGoplspConfig, {
 					buildFlags: ['-something'],
 					env: { foo: 'bar' },
 					hoverKind: 'NoDocumentation',
@@ -43,13 +43,13 @@ suite('gopls configuration tests', () => {
 				}
 			},
 			{
-				name: 'user set extra gopls settings',
-				section: 'gopls',
-				input: Object.assign({}, defaultGoplsConfig, {
-					undefinedGoplsSetting: true
+				name: 'user set extra goplsp settings',
+				section: 'goplsp',
+				input: Object.assign({}, defaultGoplspConfig, {
+					undefinedGoplspSetting: true
 				}),
 				want: {
-					undefinedGoplsSetting: true
+					undefinedGoplspSetting: true
 				}
 			},
 			{
@@ -60,34 +60,34 @@ suite('gopls configuration tests', () => {
 			}
 		];
 		testCases.map((tc: TestCase) => {
-			const actual = lsp.filterGoplsDefaultConfigValues(tc.input, undefined);
+			const actual = lsp.filterGoplspDefaultConfigValues(tc.input, undefined);
 			assert.deepStrictEqual(actual, tc.want, `Failed: ${tc.name}`);
 		});
 	});
 
-	test('passGoConfigToGoplsConfigValues', async () => {
+	test('passGoConfigToGoplspConfigValues', async () => {
 		interface TestCase {
 			name: string;
-			goplsConfig: any;
+			goplspConfig: any;
 			goConfig: any;
 			want: any;
 		}
 		const testCases: TestCase[] = [
 			{
-				name: 'undefined gopls, go configs result in an empty config',
-				goplsConfig: undefined,
+				name: 'undefined goplsp, go configs result in an empty config',
+				goplspConfig: undefined,
 				goConfig: undefined,
 				want: {}
 			},
 			{
-				name: 'empty gopls, go configs result in an empty config',
-				goplsConfig: {},
+				name: 'empty goplsp, go configs result in an empty config',
+				goplspConfig: {},
 				goConfig: {},
 				want: {}
 			},
 			{
-				name: 'empty gopls, default go configs result in an empty config',
-				goplsConfig: {},
+				name: 'empty goplsp, default go configs result in an empty config',
+				goplspConfig: {},
 				goConfig: {
 					buildFlags: [],
 					buildTags: ''
@@ -95,20 +95,20 @@ suite('gopls configuration tests', () => {
 				want: {}
 			},
 			{
-				name: 'pass go config buildFlags to gopls config',
-				goplsConfig: {},
-				goConfig: { buildFlags: ['-modfile', 'gopls.mod', '-tags', 'tag1,tag2', '-modcacherw'] },
-				want: { 'build.buildFlags': ['-modfile', 'gopls.mod', '-tags', 'tag1,tag2', '-modcacherw'] }
+				name: 'pass go config buildFlags to goplsp config',
+				goplspConfig: {},
+				goConfig: { buildFlags: ['-modfile', 'goplsp.mod', '-tags', 'tag1,tag2', '-modcacherw'] },
+				want: { 'build.buildFlags': ['-modfile', 'goplsp.mod', '-tags', 'tag1,tag2', '-modcacherw'] }
 			},
 			{
-				name: 'pass go config buildTags to gopls config',
-				goplsConfig: {},
+				name: 'pass go config buildTags to goplsp config',
+				goplspConfig: {},
 				goConfig: { buildTags: 'tag1,tag2' },
 				want: { 'build.buildFlags': ['-tags', 'tag1,tag2'] }
 			},
 			{
 				name: 'do not pass go config buildTags if buildFlags already have tags',
-				goplsConfig: {},
+				goplspConfig: {},
 				goConfig: {
 					buildFlags: ['-tags', 'tag0'],
 					buildTags: 'tag1,tag2'
@@ -116,30 +116,30 @@ suite('gopls configuration tests', () => {
 				want: { 'build.buildFlags': ['-tags', 'tag0'] }
 			},
 			{
-				name: 'do not mutate other gopls config but gopls.buildFlags',
-				goplsConfig: {
+				name: 'do not mutate other goplsp config but goplsp.buildFlags',
+				goplspConfig: {
 					'build.env': { GOPROXY: 'direct' }
 				},
-				goConfig: { buildFlags: ['-modfile', 'gopls.mod', '-tags', 'tag1,tag2', '-modcacherw'] },
+				goConfig: { buildFlags: ['-modfile', 'goplsp.mod', '-tags', 'tag1,tag2', '-modcacherw'] },
 				want: {
 					'build.env': { GOPROXY: 'direct' },
-					'build.buildFlags': ['-modfile', 'gopls.mod', '-tags', 'tag1,tag2', '-modcacherw']
+					'build.buildFlags': ['-modfile', 'goplsp.mod', '-tags', 'tag1,tag2', '-modcacherw']
 				}
 			},
 
 			{
-				name: 'do not mutate misconfigured gopls.buildFlags',
-				goplsConfig: {
-					'build.buildFlags': '-modfile gopls.mod' // misconfiguration
+				name: 'do not mutate misconfigured goplsp.buildFlags',
+				goplspConfig: {
+					'build.buildFlags': '-modfile goplsp.mod' // misconfiguration
 				},
 				goConfig: {
 					buildFlags: '-modfile go.mod -tags tag1 -modcacherw'
 				},
-				want: { 'build.buildFlags': '-modfile gopls.mod' }
+				want: { 'build.buildFlags': '-modfile goplsp.mod' }
 			},
 			{
-				name: 'do not overwrite gopls config if it is explicitly set',
-				goplsConfig: {
+				name: 'do not overwrite goplsp config if it is explicitly set',
+				goplspConfig: {
 					'build.env': { GOPROXY: 'direct' },
 					'build.buildFlags': [] // empty
 				},
@@ -151,11 +151,11 @@ suite('gopls configuration tests', () => {
 				want: {
 					'build.env': { GOPROXY: 'direct' },
 					'build.buildFlags': []
-				} // gopls.buildFlags untouched.
+				} // goplsp.buildFlags untouched.
 			}
 		];
 		testCases.map((tc: TestCase) => {
-			const actual = lsp.passGoConfigToGoplsConfigValues(tc.goplsConfig, tc.goConfig);
+			const actual = lsp.passGoConfigToGoplspConfigValues(tc.goplspConfig, tc.goConfig);
 			assert.deepStrictEqual(actual, tc.want, `Failed: ${tc.name}`);
 		});
 	});

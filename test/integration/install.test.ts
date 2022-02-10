@@ -144,7 +144,7 @@ suite('Installation Tests', function () {
 		await runTest(
 			[
 				{
-					name: 'gopls',
+					name: 'goplsp',
 					versions: ['v0.1.0', 'v1.0.0', 'v1.0.1-pre.2'],
 					wantVersion: isInPreviewMode() ? 'v1.0.1-pre.2' : 'v1.0.0'
 				}
@@ -156,7 +156,7 @@ suite('Installation Tests', function () {
 	test('Install multiple tools with a local proxy', async () => {
 		await runTest(
 			[
-				{ name: 'gopls', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
+				{ name: 'goplsp', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
 				{ name: 'dlv', versions: ['v1.0.0', 'v1.8.0'], wantVersion: 'v1.8.0' }
 			],
 			true
@@ -166,7 +166,7 @@ suite('Installation Tests', function () {
 	test('Install multiple tools with a local proxy & GOBIN', async () => {
 		await runTest(
 			[
-				{ name: 'gopls', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
+				{ name: 'goplsp', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
 				{ name: 'dlv', versions: ['v1.0.0', 'v1.8.0'], wantVersion: 'v1.8.0' }
 			],
 			true, // LOCAL PROXY
@@ -240,21 +240,21 @@ suite('getConfiguredTools', () => {
 	test('do not require legacy tools when using language server', async () => {
 		const configured = getConfiguredTools(fakeGoVersion('1.15.6'), { useLanguageServer: true }, {});
 		const got = configured.map((tool) => tool.name) ?? [];
-		assert(got.includes('gopls'), `omitted 'gopls': ${JSON.stringify(got)}`);
+		assert(got.includes('goplsp'), `omitted 'goplsp': ${JSON.stringify(got)}`);
 		assert(!got.includes('guru') && !got.includes('gocode'), `suggested legacy tools: ${JSON.stringify(got)}`);
 	});
 
-	test('do not require gopls when not using language server', async () => {
+	test('do not require goplsp when not using language server', async () => {
 		const configured = getConfiguredTools(fakeGoVersion('1.15.6'), { useLanguageServer: false }, {});
 		const got = configured.map((tool) => tool.name) ?? [];
-		assert(!got.includes('gopls'), `suggested 'gopls': ${JSON.stringify(got)}`);
+		assert(!got.includes('goplsp'), `suggested 'goplsp': ${JSON.stringify(got)}`);
 		assert(got.includes('guru') && got.includes('gocode'), `omitted legacy tools: ${JSON.stringify(got)}`);
 	});
 
-	test('do not require gopls when the go version is old', async () => {
+	test('do not require goplsp when the go version is old', async () => {
 		const configured = getConfiguredTools(fakeGoVersion('1.9'), { useLanguageServer: true }, {});
 		const got = configured.map((tool) => tool.name) ?? [];
-		assert(!got.includes('gopls'), `suggested 'gopls' for old go: ${JSON.stringify(got)}`);
+		assert(!got.includes('goplsp'), `suggested 'goplsp' for old go: ${JSON.stringify(got)}`);
 		assert(got.includes('guru') && got.includes('gocode'), `omitted legacy tools: ${JSON.stringify(got)}`);
 	});
 });

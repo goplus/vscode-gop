@@ -1,12 +1,12 @@
 {
-  "name": "go",
-  "displayName": "Go",
-  "version": "0.32.0-dev",
+  "name": "gop",
+  "displayName": "Goplus",
+  "version": "0.1.0-dev",
   "preview": true,
-  "publisher": "golang",
-  "description": "Rich Go language support for Visual Studio Code",
+  "publisher": "goplus",
+  "description": "Rich Goplus language support for Visual Studio Code",
   "author": {
-    "name": "Go Team at Google"
+    "name": "Goplus"
   },
   "license": "MIT",
   "icon": "media/go-logo-blue.png",
@@ -25,10 +25,10 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/golang/vscode-go"
+    "url": "https://github.com/goplus/vscode-go"
   },
   "bugs": {
-    "url": "https://github.com/golang/vscode-go/issues"
+    "url": "https://github.com/goplus/vscode-go/issues"
   },
   "keywords": [
     "multi-root ready"
@@ -92,9 +92,13 @@
   },
   "activationEvents": [
     "onLanguage:go",
+    "onLanguage:gop",
     "workspaceContains:*.go",
     "workspaceContains:*/*.go",
     "workspaceContains:*/*/*.go",
+    "workspaceContains:*.gop",
+    "workspaceContains:*/*.gop",
+    "workspaceContains:*/*/*.gop",
     "onCommand:go.gopath",
     "onCommand:go.tools.install",
     "onCommand:go.locate.tools",
@@ -132,10 +136,21 @@
         ]
       },
       {
+        "id": "gop",
+        "extensions": [
+          ".gop",
+          ".gox",
+          ".spx"
+        ],
+        "aliases": [
+          "Goplus"
+        ]
+      },
+      {
         "id": "go.mod",
         "filenames": [
           "go.mod",
-          "gopls.mod"
+          "goplsp.mod"
         ],
         "aliases": [
           "Go Module File"
@@ -325,7 +340,7 @@
       {
         "command": "go.extractServerChannel",
         "title": "Go: Extract Language Server Logs To Editor",
-        "description": "Extract logs in the `gopls (server)` output channel to the editor."
+        "description": "Extract logs in the `goplsp (server)` output channel to the editor."
       },
       {
         "command": "go.welcome",
@@ -1058,13 +1073,13 @@
             "type": "string"
           },
           "default": [],
-          "description": "Flags to `go build`/`go test` used during build-on-save or running tests. (e.g. [\"-ldflags='-s'\"]) This is propagated to the language server if `gopls.build.buildFlags` is not specified.",
+          "description": "Flags to `go build`/`go test` used during build-on-save or running tests. (e.g. [\"-ldflags='-s'\"]) This is propagated to the language server if `goplsp.build.buildFlags` is not specified.",
           "scope": "resource"
         },
         "go.buildTags": {
           "type": "string",
           "default": "",
-          "description": "The Go build tags to use for all commands, that support a `-tags '...'` argument. When running tests, go.testTags will be used instead if it was set. This is propagated to the language server if `gopls.build.buildFlags` is not specified.",
+          "description": "The Go build tags to use for all commands, that support a `-tags '...'` argument. When running tests, go.testTags will be used instead if it was set. This is propagated to the language server if `goplsp.build.buildFlags` is not specified.",
           "scope": "resource"
         },
         "go.testTags": {
@@ -1461,7 +1476,7 @@
         "go.useCodeSnippetsOnFunctionSuggestWithoutType": {
           "type": "boolean",
           "default": false,
-          "description": "Complete functions with their parameter signature, excluding the variable types. Use `gopls.usePlaceholders` when using the language server.",
+          "description": "Complete functions with their parameter signature, excluding the variable types. Use `goplsp.usePlaceholders` when using the language server.",
           "scope": "resource"
         },
         "go.autocompleteUnimportedPackages": {
@@ -1484,7 +1499,7 @@
         "go.useLanguageServer": {
           "type": "boolean",
           "default": true,
-          "description": "Use the Go language server \"gopls\" from Google for powering language features like code navigation, completion, refactoring, formatting & diagnostics."
+          "description": "Use the Go language server \"goplsp\" from Google for powering language features like code navigation, completion, refactoring, formatting & diagnostics."
         },
         "go.languageServerFlags": {
           "type": "array",
@@ -1541,7 +1556,7 @@
             "checks only the minimum tools versions required by the extension",
             "completely disables version check (not recommended)"
           ],
-          "markdownDescription": "Specify whether to prompt about new versions of Go and the Go tools (currently, only `gopls`) the extension depends on"
+          "markdownDescription": "Specify whether to prompt about new versions of Go and the Go tools (currently, only `goplsp`) the extension depends on"
         },
         "go.toolsManagement.autoUpdate": {
           "type": "boolean",
@@ -1552,7 +1567,7 @@
         "go.useGoProxyToCheckForToolUpdates": {
           "type": "boolean",
           "default": true,
-          "description": "When enabled, the extension automatically checks the Go proxy if there are updates available for Go and the Go tools (at present, only gopls) it depends on and prompts the user accordingly",
+          "description": "When enabled, the extension automatically checks the Go proxy if there are updates available for Go and the Go tools (at present, only goplsp) it depends on and prompts the user accordingly",
           "markdownDeprecationMessage": "Use `go.toolsManagement.checkForUpdates` instead."
         },
         "go.gotoSymbol.includeImports": {
@@ -1716,7 +1731,7 @@
         "go.survey.prompt": {
           "type": "boolean",
           "default": true,
-          "description": "Prompt for surveys, including the gopls survey and the Go developer survey."
+          "description": "Prompt for surveys, including the goplsp survey and the Go developer survey."
         },
         "go.editorContextMenuCommands": {
           "type": "object",
@@ -1963,10 +1978,10 @@
               "default": "go",
               "description": "Alternate tool to use instead of the go binary or alternate path to use for the go binary."
             },
-            "gopls": {
+            "goplsp": {
               "type": "string",
-              "default": "gopls",
-              "description": "Alternate tool to use instead of the gopls binary or alternate path to use for the gopls binary."
+              "default": "goplsp",
+              "description": "Alternate tool to use instead of the goplsp binary or alternate path to use for the goplsp binary."
             },
             "go-outline": {
               "type": "string",
@@ -1987,9 +2002,9 @@
           "scope": "resource",
           "type": "boolean"
         },
-        "gopls": {
+        "goplsp": {
           "type": "object",
-          "markdownDescription": "Configure the default Go language server ('gopls'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/gopls/doc/settings.md) for all available settings.",
+          "markdownDescription": "Configure the default Go language server ('goplsp'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/goplsp/doc/settings.md) for all available settings.",
           "scope": "resource",
           "properties": {
             "build.allowImplicitNetworkAccess": {
@@ -2020,12 +2035,12 @@
             },
             "build.env": {
               "type": "object",
-              "markdownDescription": "env adds environment variables to external commands run by `gopls`, most notably `go list`.\n",
+              "markdownDescription": "env adds environment variables to external commands run by `goplsp`, most notably `go list`.\n",
               "scope": "resource"
             },
             "build.expandWorkspaceToModule": {
               "type": "boolean",
-              "markdownDescription": "(Experimental) expandWorkspaceToModule instructs `gopls` to adjust the scope of the\nworkspace to find the best available module root. `gopls` first looks for\na go.mod file in any parent directory of the workspace folder, expanding\nthe scope to that directory if it exists. If no viable parent directory is\nfound, gopls will check if there is exactly one child directory containing\na go.mod file, narrowing the scope to that directory if it exists.\n",
+              "markdownDescription": "(Experimental) expandWorkspaceToModule instructs `goplsp` to adjust the scope of the\nworkspace to find the best available module root. `goplsp` first looks for\na go.mod file in any parent directory of the workspace folder, expanding\nthe scope to that directory if it exists. If no viable parent directory is\nfound, goplsp will check if there is exactly one child directory containing\na go.mod file, narrowing the scope to that directory if it exists.\n",
               "default": true,
               "scope": "resource"
             },
@@ -2037,7 +2052,7 @@
             },
             "build.experimentalUseInvalidMetadata": {
               "type": "boolean",
-              "markdownDescription": "(Experimental) experimentalUseInvalidMetadata enables gopls to fall back on outdated\npackage metadata to provide editor features if the go command fails to\nload packages for some reason (like an invalid go.mod file). This will\neventually be the default behavior, and this setting will be removed.\n",
+              "markdownDescription": "(Experimental) experimentalUseInvalidMetadata enables goplsp to fall back on outdated\npackage metadata to provide editor features if the go command fails to\nload packages for some reason (like an invalid go.mod file). This will\neventually be the default behavior, and this setting will be removed.\n",
               "default": false,
               "scope": "resource"
             },
@@ -2049,13 +2064,13 @@
             },
             "build.memoryMode": {
               "type": "string",
-              "markdownDescription": "(Experimental) memoryMode controls the tradeoff `gopls` makes between memory usage and\ncorrectness.\n\nValues other than `Normal` are untested and may break in surprising ways.\n",
+              "markdownDescription": "(Experimental) memoryMode controls the tradeoff `goplsp` makes between memory usage and\ncorrectness.\n\nValues other than `Normal` are untested and may break in surprising ways.\n",
               "enum": [
                 "DegradeClosed",
                 "Normal"
               ],
               "markdownEnumDescriptions": [
-                "`\"DegradeClosed\"`: In DegradeClosed mode, `gopls` will collect less information about\npackages without open files. As a result, features like Find\nReferences and Rename will miss results in such packages.\n",
+                "`\"DegradeClosed\"`: In DegradeClosed mode, `goplsp` will collect less information about\npackages without open files. As a result, features like Find\nReferences and Rename will miss results in such packages.\n",
                 ""
               ],
               "default": "Normal",
@@ -2081,7 +2096,7 @@
             },
             "ui.codelenses": {
               "type": "object",
-              "markdownDescription": "codelenses overrides the enabled/disabled state of code lenses. See the\n\"Code Lenses\" section of the\n[Settings page](https://github.com/golang/tools/blob/master/gopls/doc/settings.md)\nfor the list of supported lenses.\n\nExample Usage:\n\n```json5\n\"gopls\": {\n...\n  \"codelenses\": {\n    \"generate\": false,  // Don't show the `go generate` lens.\n    \"gc_details\": true  // Show a code lens toggling the display of gc's choices.\n  }\n...\n}\n```\n",
+              "markdownDescription": "codelenses overrides the enabled/disabled state of code lenses. See the\n\"Code Lenses\" section of the\n[Settings page](https://github.com/goplus/tools/blob/goplus/goplsp/doc/settings.md)\nfor the list of supported lenses.\n\nExample Usage:\n\n```json5\n\"goplsp\": {\n...\n  \"codelenses\": {\n    \"generate\": false,  // Don't show the `go generate` lens.\n    \"gc_details\": true  // Show a code lens toggling the display of gc's choices.\n  }\n...\n}\n```\n",
               "scope": "resource",
               "properties": {
                 "gc_details": {
@@ -2157,7 +2172,7 @@
             },
             "ui.diagnostic.analyses": {
               "type": "object",
-              "markdownDescription": "analyses specify analyses that the user would like to enable or disable.\nA map of the names of analysis passes that should be enabled/disabled.\nA full list of analyzers that gopls uses can be found\n[here](https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md).\n\nExample Usage:\n\n```json5\n...\n\"analyses\": {\n  \"unreachable\": false, // Disable the unreachable analyzer.\n  \"unusedparams\": true  // Enable the unusedparams analyzer.\n}\n...\n```\n",
+              "markdownDescription": "analyses specify analyses that the user would like to enable or disable.\nA map of the names of analysis passes that should be enabled/disabled.\nA full list of analyzers that goplsp uses can be found\n[here](https://github.com/golang/tools/blob/master/goplsp/doc/analyzers.md).\n\nExample Usage:\n\n```json5\n...\n\"analyses\": {\n  \"unreachable\": false, // Disable the unreachable analyzer.\n  \"unusedparams\": true  // Enable the unusedparams analyzer.\n}\n...\n```\n",
               "scope": "resource",
               "properties": {
                 "asmdecl": {
@@ -2406,13 +2421,13 @@
             },
             "ui.diagnostic.diagnosticsDelay": {
               "type": "string",
-              "markdownDescription": "(Advanced) diagnosticsDelay controls the amount of time that gopls waits\nafter the most recent file modification before computing deep diagnostics.\nSimple diagnostics (parsing and type-checking) are always run immediately\non recently modified packages.\n\nThis option must be set to a valid duration string, for example `\"250ms\"`.\n",
+              "markdownDescription": "(Advanced) diagnosticsDelay controls the amount of time that goplsp waits\nafter the most recent file modification before computing deep diagnostics.\nSimple diagnostics (parsing and type-checking) are always run immediately\non recently modified packages.\n\nThis option must be set to a valid duration string, for example `\"250ms\"`.\n",
               "default": "250ms",
               "scope": "resource"
             },
             "ui.diagnostic.experimentalWatchedFileDelay": {
               "type": "string",
-              "markdownDescription": "(Experimental) experimentalWatchedFileDelay controls the amount of time that gopls waits\nfor additional workspace/didChangeWatchedFiles notifications to arrive,\nbefore processing all such notifications in a single batch. This is\nintended for use by LSP clients that don't support their own batching of\nfile system notifications.\n\nThis option must be set to a valid duration string, for example `\"100ms\"`.\n",
+              "markdownDescription": "(Experimental) experimentalWatchedFileDelay controls the amount of time that goplsp waits\nfor additional workspace/didChangeWatchedFiles notifications to arrive,\nbefore processing all such notifications in a single batch. This is\nintended for use by LSP clients that don't support their own batching of\nfile system notifications.\n\nThis option must be set to a valid duration string, for example `\"100ms\"`.\n",
               "default": "0s",
               "scope": "resource"
             },
@@ -2490,7 +2505,7 @@
             },
             "ui.navigation.symbolStyle": {
               "type": "string",
-              "markdownDescription": "(Advanced) symbolStyle controls how symbols are qualified in symbol responses.\n\nExample Usage:\n\n```json5\n\"gopls\": {\n...\n  \"symbolStyle\": \"Dynamic\",\n...\n}\n```\n",
+              "markdownDescription": "(Advanced) symbolStyle controls how symbols are qualified in symbol responses.\n\nExample Usage:\n\n```json5\n\"goplsp\": {\n...\n  \"symbolStyle\": \"Dynamic\",\n...\n}\n```\n",
               "enum": [
                 "Dynamic",
                 "Full",

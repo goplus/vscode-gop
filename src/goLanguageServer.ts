@@ -33,7 +33,7 @@ import {
 	RevealOutputChannelOn
 } from 'vscode-languageclient';
 import { LanguageClient } from 'vscode-languageclient/node';
-import { getGoConfig, getGoplsConfig, IsInCloudIDE } from './config';
+import { getGoConfig, getGoplspConfig, IsInCloudIDE } from './config';
 import { extensionId } from './const';
 import { GoCodeActionProvider } from './goCodeAction';
 import { GoDefinitionProvider } from './goDeclaration';
@@ -73,7 +73,7 @@ import { getToolFromToolPath } from './utils/pathUtils';
 import WebRequest = require('web-request');
 import { FoldingContext } from 'vscode';
 import { ProvideFoldingRangeSignature } from 'vscode-languageclient/lib/common/foldingRange';
-import { daysBetween, getStateConfig, maybePromptForGoplsSurvey, timeDay, timeMinute } from './goSurvey';
+import { daysBetween, getStateConfig, maybePromptForGoplspSurvey, timeDay, timeMinute } from './goSurvey';
 import { maybePromptForDeveloperSurvey } from './goDeveloperSurvey';
 
 export interface LanguageServerConfig {
@@ -180,21 +180,21 @@ export async function startLanguageServerWithFallback(ctx: vscode.ExtensionConte
 
 	updateRestartHistory(reason, cfg.enabled);
 
-	// We have some extra prompts for gopls users and for people who have opted
-	// out of gopls.
+	// We have some extra prompts for goplsp users and for people who have opted
+	// out of goplsp.
 	if (reason === 'activation') {
-		scheduleGoplsSuggestions();
+		scheduleGoplspSuggestions();
 	}
 
-	// If the language server is gopls, we enable a few additional features.
+	// If the language server is goplsp, we enable a few additional features.
 	// These include prompting for updates and surveys.
-	if (cfg.serverName === 'gopls') {
+	if (cfg.serverName === 'goplsp') {
 		const tool = getTool(cfg.serverName);
 		if (tool) {
 			// If the language server is turned on because it is enabled by default,
 			// make sure that the user is using a new enough version.
 			if (cfg.enabled && languageServerUsingDefault(goConfig)) {
-				suggestUpdateGopls(tool, cfg);
+				suggestUpdateGoplsp(tool, cfg);
 			}
 		}
 	}
@@ -215,20 +215,20 @@ export async function startLanguageServerWithFallback(ctx: vscode.ExtensionConte
 	}
 }
 
-// scheduleGoplsSuggestions sets timeouts for the various gopls-specific
-// suggestions. We check user's gopls versions once per day to prompt users to
+// scheduleGoplspSuggestions sets timeouts for the various goplsp-specific
+// suggestions. We check user's goplsp versions once per day to prompt users to
 // update to the latest version. We also check if we should prompt users to
 // fill out the survey.
-function scheduleGoplsSuggestions() {
+function scheduleGoplspSuggestions() {
 	if (IsInCloudIDE) {
 		return;
 	}
 	// Some helper functions.
-	const usingGopls = (cfg: LanguageServerConfig): boolean => {
-		return cfg.enabled && cfg.serverName === 'gopls';
+	const usingGoplsp = (cfg: LanguageServerConfig): boolean => {
+		return cfg.enabled && cfg.serverName === 'goplsp';
 	};
-	const installGopls = async (cfg: LanguageServerConfig) => {
-		const tool = getTool('gopls');
+	const installGoplsp = async (cfg: LanguageServerConfig) => {
+		const tool = getTool('goplsp');
 		const versionToUpdate = await shouldUpdateLanguageServer(tool, cfg);
 		if (!versionToUpdate) {
 			return;
@@ -248,14 +248,14 @@ function scheduleGoplsSuggestions() {
 		setTimeout(update, timeDay);
 
 		let cfg = buildLanguageServerConfig(getGoConfig());
-		if (!usingGopls(cfg)) {
-			// This shouldn't happen, but if the user has a non-gopls language
+		if (!usingGoplsp(cfg)) {
+			// This shouldn't happen, but if the user has a non-goplsp language
 			// server enabled, we shouldn't prompt them to change.
-			if (cfg.serverName !== '' && cfg.serverName !== 'gopls') {
+			if (cfg.serverName !== '' && cfg.serverName !== 'goplsp') {
 				return;
 			}
-			// Prompt the user to enable gopls and record what actions they took.
-			await promptAboutGoplsOptOut(false);
+			// Prompt the user to enable goplsp and record what actions they took.
+			await promptAboutGoplspOptOut(false);
 			// Check if the language server has now been enabled, and if so,
 			// it will be installed below.
 			cfg = buildLanguageServerConfig(getGoConfig());
@@ -263,7 +263,7 @@ function scheduleGoplsSuggestions() {
 				return;
 			}
 		}
-		await installGopls(cfg);
+		await installGoplsp(cfg);
 	};
 	const survey = async () => {
 		setTimeout(survey, timeDay);
@@ -278,20 +278,20 @@ function scheduleGoplsSuggestions() {
 		if (!foundGo) {
 			return;
 		}
-		maybePromptForGoplsSurvey();
+		maybePromptForGoplspSurvey();
 		maybePromptForDeveloperSurvey();
 	};
 	setTimeout(update, 10 * timeMinute);
 	setTimeout(survey, 30 * timeMinute);
 }
 
-export async function promptAboutGoplsOptOut(surveyOnly: boolean) {
+export async function promptAboutGoplspOptOut(surveyOnly: boolean) {
 	// Check if the configuration is set in the workspace.
 	const useLanguageServer = getGoConfig().inspect('useLanguageServer');
 	const workspace = useLanguageServer.workspaceFolderValue === false || useLanguageServer.workspaceValue === false;
 
-	let cfg = getGoplsOptOutConfig(workspace);
-	const promptFn = async (): Promise<GoplsOptOutConfig> => {
+	let cfg = getGoplspOptOutConfig(workspace);
+	const promptFn = async (): Promise<GoplspOptOutConfig> => {
 		if (cfg.prompt === false) {
 			return cfg;
 		}
@@ -301,7 +301,7 @@ export async function promptAboutGoplsOptOut(surveyOnly: boolean) {
 		}
 		cfg.lastDatePrompted = new Date();
 		if (surveyOnly) {
-			await promptForGoplsOptOutSurvey(
+			await promptForGoplspOptOutSurvey(
 				cfg,
 				`Looks like you've disabled the Go language server, which is the recommended default for this extension.
 Would you be willing to tell us why you've disabled it?`
@@ -310,7 +310,7 @@ Would you be willing to tell us why you've disabled it?`
 		}
 		const selected = await vscode.window.showInformationMessage(
 			`We noticed that you have disabled the language server.
-It has [stabilized](https://blog.golang.org/gopls-vscode-go) and is now enabled by default in this extension.
+It has [stabilized](https://blog.golang.org/goplsp-vscode-go) and is now enabled by default in this extension.
 Would you like to enable it now?`,
 			{ title: 'Enable' },
 			{ title: 'Not now' },
@@ -344,7 +344,7 @@ Would you like to enable it now?`,
 				break;
 			case 'Never':
 				cfg.prompt = false;
-				await promptForGoplsOptOutSurvey(
+				await promptForGoplspOptOutSurvey(
 					cfg,
 					'No problem. Would you be willing to tell us why you have opted out of the language server?'
 				);
@@ -353,17 +353,17 @@ Would you like to enable it now?`,
 		return cfg;
 	};
 	cfg = await promptFn();
-	flushGoplsOptOutConfig(cfg, workspace);
+	flushGoplspOptOutConfig(cfg, workspace);
 }
 
-async function promptForGoplsOptOutSurvey(cfg: GoplsOptOutConfig, msg: string): Promise<GoplsOptOutConfig> {
+async function promptForGoplspOptOutSurvey(cfg: GoplspOptOutConfig, msg: string): Promise<GoplspOptOutConfig> {
 	const s = await vscode.window.showInformationMessage(msg, { title: 'Yes' }, { title: 'No' });
 	if (!s) {
 		return cfg;
 	}
-	let goplsVersion = await getLocalGoplsVersion(latestConfig);
-	if (!goplsVersion) {
-		goplsVersion = 'na';
+	let goplspVersion = await getLocalGoplspVersion(latestConfig);
+	if (!goplspVersion) {
+		goplspVersion = 'na';
 	}
 	const goV = await getGoVersion();
 	let goVersion = 'na';
@@ -375,7 +375,7 @@ async function promptForGoplsOptOutSurvey(cfg: GoplsOptOutConfig, msg: string): 
 			cfg.prompt = false;
 			await vscode.env.openExternal(
 				vscode.Uri.parse(
-					`https://google.qualtrics.com/jfe/form/SV_doId0RNgV3pHovc?gopls=${goplsVersion}&go=${goVersion}&os=${process.platform}`
+					`https://google.qualtrics.com/jfe/form/SV_doId0RNgV3pHovc?goplsp=${goplspVersion}&go=${goVersion}&os=${process.platform}`
 				)
 			);
 			break;
@@ -385,22 +385,22 @@ async function promptForGoplsOptOutSurvey(cfg: GoplsOptOutConfig, msg: string): 
 	return cfg;
 }
 
-export interface GoplsOptOutConfig {
+export interface GoplspOptOutConfig {
 	prompt?: boolean;
 	lastDatePrompted?: Date;
 }
 
-const goplsOptOutConfigKey = 'goplsOptOutConfig';
+const goplspOptOutConfigKey = 'goplspOptOutConfig';
 
-export const getGoplsOptOutConfig = (workspace: boolean): GoplsOptOutConfig => {
-	return getStateConfig(goplsOptOutConfigKey, workspace) as GoplsOptOutConfig;
+export const getGoplspOptOutConfig = (workspace: boolean): GoplspOptOutConfig => {
+	return getStateConfig(goplspOptOutConfigKey, workspace) as GoplspOptOutConfig;
 };
 
-function flushGoplsOptOutConfig(cfg: GoplsOptOutConfig, workspace: boolean) {
+function flushGoplspOptOutConfig(cfg: GoplspOptOutConfig, workspace: boolean) {
 	if (workspace) {
-		updateWorkspaceState(goplsOptOutConfigKey, JSON.stringify(cfg));
+		updateWorkspaceState(goplspOptOutConfigKey, JSON.stringify(cfg));
 	}
-	updateGlobalState(goplsOptOutConfigKey, JSON.stringify(cfg));
+	updateGlobalState(goplspOptOutConfigKey, JSON.stringify(cfg));
 }
 
 async function startLanguageServer(ctx: vscode.ExtensionContext, config: LanguageServerConfig): Promise<boolean> {
@@ -435,7 +435,7 @@ async function startLanguageServer(ctx: vscode.ExtensionContext, config: Languag
 	// language server.
 	if (!restartCommand) {
 		restartCommand = vscode.commands.registerCommand('go.languageserver.restart', async () => {
-			await suggestGoplsIssueReport(
+			await suggestGoplspIssueReport(
 				"Looks like you're about to manually restart the language server.",
 				errorKind.manualRestart
 			);
@@ -484,11 +484,12 @@ function buildLanguageClientOption(cfg: LanguageServerConfig): BuildLanguageClie
 // buildLanguageClient returns a language client built using the given language server config.
 // The returned language client need to be started before use.
 export async function buildLanguageClient(cfg: BuildLanguageClientOption): Promise<LanguageClient> {
-	const goplsWorkspaceConfig = await adjustGoplsWorkspaceConfiguration(cfg, getGoplsConfig(), 'gopls', undefined);
+	const goplspWorkspaceConfig = await adjustGoplspWorkspaceConfiguration(cfg, getGoplspConfig(), 'goplsp', undefined);
 
 	const documentSelector = [
-		// gopls handles only file URIs.
+		// goplsp handles only file URIs.
 		{ language: 'go', scheme: 'file' },
+		{ language: 'gop', scheme: 'file' },
 		{ language: 'go.mod', scheme: 'file' },
 		{ language: 'go.sum', scheme: 'file' },
 		{ language: 'go.work', scheme: 'file' },
@@ -497,14 +498,14 @@ export async function buildLanguageClient(cfg: BuildLanguageClientOption): Promi
 
 	const c = new LanguageClient(
 		'go', // id
-		cfg.serverName, // name e.g. gopls
+		cfg.serverName, // name e.g. goplsp
 		{
 			command: cfg.path,
 			args: ['-mode=stdio', ...cfg.flags],
 			options: { env: cfg.env }
 		},
 		{
-			initializationOptions: goplsWorkspaceConfig,
+			initializationOptions: goplspWorkspaceConfig,
 			documentSelector,
 			uriConverters: {
 				// Apply file:/// scheme to all file paths.
@@ -519,8 +520,8 @@ export async function buildLanguageClient(cfg: BuildLanguageClientOption): Promi
 				vscode.window.showErrorMessage(
 					`The language server is not able to serve any features. Initialization failed: ${error}. `
 				);
-				suggestGoplsIssueReport(
-					'The gopls server failed to initialize',
+				suggestGoplspIssueReport(
+					'The goplsp server failed to initialize',
 					errorKind.initializationFailure,
 					error
 				);
@@ -543,8 +544,8 @@ export async function buildLanguageClient(cfg: BuildLanguageClientOption): Promi
 					if (crashCount < 5) {
 						return CloseAction.Restart;
 					}
-					suggestGoplsIssueReport(
-						'The connection to gopls has been closed. The gopls server may have crashed.',
+					suggestGoplspIssueReport(
+						'The connection to goplsp has been closed. The goplsp server may have crashed.',
 						errorKind.crash
 					);
 					return CloseAction.DoNotRestart;
@@ -734,7 +735,7 @@ export async function buildLanguageClient(cfg: BuildLanguageClientOption): Promi
 								const scopeUri = params.items[i].scopeUri;
 								const resource = scopeUri ? vscode.Uri.parse(scopeUri) : undefined;
 								const section = params.items[i].section;
-								workspaceConfig = await adjustGoplsWorkspaceConfiguration(
+								workspaceConfig = await adjustGoplspWorkspaceConfiguration(
 									cfg,
 									workspaceConfig,
 									section,
@@ -752,15 +753,15 @@ export async function buildLanguageClient(cfg: BuildLanguageClientOption): Promi
 	return c;
 }
 
-// filterGoplsDefaultConfigValues removes the entries filled based on the default values
+// filterGoplspDefaultConfigValues removes the entries filled based on the default values
 // and selects only those the user explicitly specifies in their settings.
 // This returns a new object created based on the filtered properties of workspaceConfig.
 // Exported for testing.
-export function filterGoplsDefaultConfigValues(workspaceConfig: any, resource: vscode.Uri): any {
+export function filterGoplspDefaultConfigValues(workspaceConfig: any, resource: vscode.Uri): any {
 	if (!workspaceConfig) {
 		workspaceConfig = {};
 	}
-	const cfg = getGoplsConfig(resource);
+	const cfg = getGoplspConfig(resource);
 	const filtered = {} as { [key: string]: any };
 	for (const [key, value] of Object.entries(workspaceConfig)) {
 		if (typeof value === 'function') {
@@ -772,7 +773,7 @@ export function filterGoplsDefaultConfigValues(workspaceConfig: any, resource: v
 			!c ||
 			!deepEqual(c.defaultValue, value) ||
 			// c.defaultValue !== value would be most likely sufficient, except
-			// when gopls' default becomes different from extension's default.
+			// when goplsp' default becomes different from extension's default.
 			// So, we also forward the key if ever explicitely stated in one of the
 			// settings layers.
 			c.globalLanguageValue !== undefined ||
@@ -788,15 +789,15 @@ export function filterGoplsDefaultConfigValues(workspaceConfig: any, resource: v
 	return filtered;
 }
 
-// passGoConfigToGoplsConfigValues passes some of the relevant 'go.' settings to gopls settings.
-// This assumes `goplsWorkspaceConfig` is an output of filterGoplsDefaultConfigValues,
+// passGoConfigToGoplspConfigValues passes some of the relevant 'go.' settings to goplsp settings.
+// This assumes `goplspWorkspaceConfig` is an output of filterGoplspDefaultConfigValues,
 // so it is modifiable and doesn't contain properties that are not explicitly set.
-//   - go.buildTags and go.buildFlags are passed as gopls.build.buildFlags
-//     if goplsWorkspaceConfig doesn't explicitly set it yet.
+//   - go.buildTags and go.buildFlags are passed as goplsp.build.buildFlags
+//     if goplspWorkspaceConfig doesn't explicitly set it yet.
 // Exported for testing.
-export function passGoConfigToGoplsConfigValues(goplsWorkspaceConfig: any, goWorkspaceConfig: any): any {
-	if (!goplsWorkspaceConfig) {
-		goplsWorkspaceConfig = {};
+export function passGoConfigToGoplspConfigValues(goplspWorkspaceConfig: any, goWorkspaceConfig: any): any {
+	if (!goplspWorkspaceConfig) {
+		goplspWorkspaceConfig = {};
 	}
 
 	const buildFlags = [] as string[];
@@ -806,37 +807,37 @@ export function passGoConfigToGoplsConfigValues(goplsWorkspaceConfig: any, goWor
 	if (goWorkspaceConfig?.buildTags && buildFlags.indexOf('-tags') === -1) {
 		buildFlags.push('-tags', goWorkspaceConfig?.buildTags);
 	}
-	// If gopls.build.buildFlags is set, don't touch it.
-	if (buildFlags.length > 0 && goplsWorkspaceConfig['build.buildFlags'] === undefined) {
-		goplsWorkspaceConfig['build.buildFlags'] = buildFlags;
+	// If goplsp.build.buildFlags is set, don't touch it.
+	if (buildFlags.length > 0 && goplspWorkspaceConfig['build.buildFlags'] === undefined) {
+		goplspWorkspaceConfig['build.buildFlags'] = buildFlags;
 	}
-	return goplsWorkspaceConfig;
+	return goplspWorkspaceConfig;
 }
 
-// adjustGoplsWorkspaceConfiguration filters unnecessary options and adds any necessary, additional
-// options to the gopls config. See filterGoplsDefaultConfigValues, passGoConfigToGoplsConfigValues.
+// adjustGoplspWorkspaceConfiguration filters unnecessary options and adds any necessary, additional
+// options to the goplsp config. See filterGoplspDefaultConfigValues, passGoConfigToGoplspConfigValues.
 // If this is for the nightly extension, we also request to activate features under experiments.
-async function adjustGoplsWorkspaceConfiguration(
+async function adjustGoplspWorkspaceConfiguration(
 	cfg: LanguageServerConfig,
 	workspaceConfig: any,
 	section: string,
 	resource: vscode.Uri
 ): Promise<any> {
-	// We process only gopls config
-	if (section !== 'gopls') {
+	// We process only goplsp config
+	if (section !== 'goplsp') {
 		return workspaceConfig;
 	}
 
-	workspaceConfig = filterGoplsDefaultConfigValues(workspaceConfig, resource);
+	workspaceConfig = filterGoplspDefaultConfigValues(workspaceConfig, resource);
 	// note: workspaceConfig is a modifiable, valid object.
-	workspaceConfig = passGoConfigToGoplsConfigValues(workspaceConfig, getGoConfig(resource));
+	workspaceConfig = passGoConfigToGoplspConfigValues(workspaceConfig, getGoConfig(resource));
 
 	// Only modify the user's configurations for the Nightly.
 	if (!isInPreviewMode()) {
 		return workspaceConfig;
 	}
-	// allExperiments is only available with gopls/v0.5.2 and above.
-	const version = await getLocalGoplsVersion(cfg);
+	// allExperiments is only available with goplsp/v0.5.2 and above.
+	const version = await getLocalGoplspVersion(cfg);
 	if (!version) {
 		return workspaceConfig;
 	}
@@ -852,7 +853,7 @@ async function adjustGoplsWorkspaceConfiguration(
 
 // createTestCodeLens adds the go.test.cursor and go.debug.cursor code lens
 function createTestCodeLens(lens: vscode.CodeLens): vscode.CodeLens[] {
-	// CodeLens argument signature in gopls is [fileName: string, testFunctions: string[], benchFunctions: string[]],
+	// CodeLens argument signature in goplsp is [fileName: string, testFunctions: string[], benchFunctions: string[]],
 	// so this needs to be deconstructured here
 	// Note that there will always only be one test function name in this context
 	if (lens.command.arguments.length < 2 || lens.command.arguments[1].length < 1) {
@@ -873,7 +874,7 @@ function createTestCodeLens(lens: vscode.CodeLens): vscode.CodeLens[] {
 }
 
 function createBenchmarkCodeLens(lens: vscode.CodeLens): vscode.CodeLens[] {
-	// CodeLens argument signature in gopls is [fileName: string, testFunctions: string[], benchFunctions: string[]],
+	// CodeLens argument signature in goplsp is [fileName: string, testFunctions: string[], benchFunctions: string[]],
 	// so this needs to be deconstructured here
 	// Note that there will always only be one benchmark function name in this context
 	if (lens.command.arguments.length < 3 || lens.command.arguments[2].length < 1) {
@@ -953,7 +954,7 @@ export async function watchLanguageServerConfiguration(e: vscode.ConfigurationCh
 	}
 
 	if (e.affectsConfiguration('go.useLanguageServer') && getGoConfig()['useLanguageServer'] === false) {
-		promptAboutGoplsOptOut(true);
+		promptAboutGoplspOptOut(true);
 	}
 }
 
@@ -1010,7 +1011,7 @@ Please try reinstalling it.`);
 /**
  *
  * Return the absolute path to the correct binary. If the required tool is not available,
- * prompt the user to install it. Only gopls is officially supported.
+ * prompt the user to install it. Only goplsp is officially supported.
  */
 export function getLanguageServerToolPath(): string {
 	const goConfig = getGoConfig();
@@ -1021,26 +1022,26 @@ export function getLanguageServerToolPath(): string {
 		);
 		return;
 	}
-	// Get the path to gopls (getBinPath checks for alternate tools).
-	const goplsBinaryPath = getBinPath('gopls');
-	if (path.isAbsolute(goplsBinaryPath)) {
-		return goplsBinaryPath;
+	// Get the path to goplsp (getBinPath checks for alternate tools).
+	const goplspBinaryPath = getBinPath('goplsp');
+	if (path.isAbsolute(goplspBinaryPath)) {
+		return goplspBinaryPath;
 	}
 	const alternateTools = goConfig['alternateTools'];
 	if (alternateTools) {
 		// The user's alternate language server was not found.
-		const goplsAlternate = alternateTools['gopls'];
-		if (goplsAlternate) {
+		const goplspAlternate = alternateTools['goplsp'];
+		if (goplspAlternate) {
 			vscode.window.showErrorMessage(
-				`Cannot find the alternate tool ${goplsAlternate} configured for gopls.
+				`Cannot find the alternate tool ${goplspAlternate} configured for goplsp.
 Please install it and reload this VS Code window.`
 			);
 			return;
 		}
 	}
 
-	// Prompt the user to install gopls.
-	promptForMissingTool('gopls');
+	// Prompt the user to install goplsp.
+	promptForMissingTool('goplsp');
 }
 
 function allFoldersHaveSameGopath(): boolean {
@@ -1064,8 +1065,8 @@ export async function shouldUpdateLanguageServer(
 	cfg: LanguageServerConfig,
 	mustCheck?: boolean
 ): Promise<semver.SemVer> {
-	// Only support updating gopls for now.
-	if (tool.name !== 'gopls' || (!mustCheck && (cfg.checkForUpdates === 'off' || IsInCloudIDE))) {
+	// Only support updating goplsp for now.
+	if (tool.name !== 'goplsp' || (!mustCheck && (cfg.checkForUpdates === 'off' || IsInCloudIDE))) {
 		return null;
 	}
 	if (!cfg.enabled) {
@@ -1078,36 +1079,36 @@ export async function shouldUpdateLanguageServer(
 		return null;
 	}
 
-	// First, run the "gopls version" command and parse its results.
-	// TODO(rstambler): Confirm that the gopls binary's modtime matches the
+	// First, run the "goplsp version" command and parse its results.
+	// TODO(rstambler): Confirm that the goplsp binary's modtime matches the
 	// modtime in the config. Update it if needed.
-	const usersVersion = await getLocalGoplsVersion(cfg);
+	const usersVersion = await getLocalGoplspVersion(cfg);
 
 	// We might have a developer version. Don't make the user update.
 	if (usersVersion === '(devel)') {
 		return null;
 	}
 
-	// Get the latest gopls version. If it is for nightly, using the prereleased version is ok.
+	// Get the latest goplsp version. If it is for nightly, using the prereleased version is ok.
 	let latestVersion =
 		cfg.checkForUpdates === 'local' ? tool.latestVersion : await latestToolVersion(tool, isInPreviewMode());
 
-	// If we failed to get the gopls version, pick the one we know to be latest at the time of this extension's last update
+	// If we failed to get the goplsp version, pick the one we know to be latest at the time of this extension's last update
 	if (!latestVersion) {
 		latestVersion = tool.latestVersion;
 	}
 
-	// If "gopls" is so old that it doesn't have the "gopls version" command,
+	// If "goplsp" is so old that it doesn't have the "goplsp version" command,
 	// or its version doesn't match our expectations, usersVersion will be empty or invalid.
 	// Suggest the latestVersion.
 	if (!usersVersion || !semver.valid(usersVersion)) {
 		return latestVersion;
 	}
 
-	// The user may have downloaded golang.org/x/tools/gopls@master,
+	// The user may have downloaded golang.org/x/tools/goplsp@master,
 	// which means that they have a pseudoversion.
 	const usersTime = parseTimestampFromPseudoversion(usersVersion);
-	// If the user has a pseudoversion, get the timestamp for the latest gopls version and compare.
+	// If the user has a pseudoversion, get the timestamp for the latest goplsp version and compare.
 	if (usersTime) {
 		let latestTime = cfg.checkForUpdates
 			? await getTimestampForVersion(tool, latestVersion)
@@ -1128,24 +1129,24 @@ export async function shouldUpdateLanguageServer(
 }
 
 /**
- * suggestUpdateGopls will make sure the user is using the latest version of `gopls`,
+ * suggestUpdateGoplsp will make sure the user is using the latest version of `goplsp`,
  * when go.useLanguageServer is changed to true by default.
  *
- * @param tool	Object of type `Tool` for gopls tool.
+ * @param tool	Object of type `Tool` for goplsp tool.
  * @param cfg	Object of type `Language Server Config` for the users language server
  * 				configuration.
  * @returns		true if the tool was updated
  */
-async function suggestUpdateGopls(tool: Tool, cfg: LanguageServerConfig): Promise<boolean> {
-	const forceUpdatedGoplsKey = 'forceUpdateForGoplsOnDefault';
+async function suggestUpdateGoplsp(tool: Tool, cfg: LanguageServerConfig): Promise<boolean> {
+	const forceUpdatedGoplspKey = 'forceUpdateForGoplspOnDefault';
 	// forceUpdated is true when the process of updating has been succesfully completed.
-	const forceUpdated = getFromGlobalState(forceUpdatedGoplsKey, false);
+	const forceUpdated = getFromGlobalState(forceUpdatedGoplspKey, false);
 	// TODO: If we want to force update again, switch this to be a comparison for a newer version.
 	if (forceUpdated) {
 		return false;
 	}
 	// Update the state to the latest version to show the last version that was checked.
-	await updateGlobalState(forceUpdatedGoplsKey, tool.latestVersion);
+	await updateGlobalState(forceUpdatedGoplspKey, tool.latestVersion);
 
 	const latestVersion = await shouldUpdateLanguageServer(tool, cfg);
 
@@ -1155,7 +1156,7 @@ async function suggestUpdateGopls(tool: Tool, cfg: LanguageServerConfig): Promis
 	}
 
 	const updateMsg =
-		"'gopls' is now enabled by default and you are using an old version. Please [update 'gopls'](https://github.com/golang/tools/blob/master/gopls/README.md#installation) for the best experience.";
+		"'goplsp' is now enabled by default and you are using an old version. Please [update 'goplsp'](https://github.com/golang/tools/blob/master/goplsp/README.md#installation) for the best experience.";
 	promptForUpdatingTool(tool.name, latestVersion, false, updateMsg);
 }
 
@@ -1210,12 +1211,12 @@ export const getTimestampForVersion = async (tool: Tool, version: semver.SemVer)
 	return time;
 };
 
-// getLocalGoplsVersion returns the version of gopls that is currently
+// getLocalGoplspVersion returns the version of goplsp that is currently
 // installed on the user's machine. This is determined by running the
-// `gopls version` command.
+// `goplsp version` command.
 //
 // If this command has already been executed, it returns the saved result.
-export const getLocalGoplsVersion = async (cfg: LanguageServerConfig) => {
+export const getLocalGoplspVersion = async (cfg: LanguageServerConfig) => {
 	if (!cfg) {
 		return null;
 	}
@@ -1233,7 +1234,7 @@ export const getLocalGoplsVersion = async (cfg: LanguageServerConfig) => {
 		const { stdout } = await execFile(cfg.path, ['version'], { env, cwd });
 		output = stdout;
 	} catch (e) {
-		// The "gopls version" command is not supported, or something else went wrong.
+		// The "goplsp version" command is not supported, or something else went wrong.
 		// TODO: Should we propagate this error?
 		return null;
 	}
@@ -1247,7 +1248,7 @@ export const getLocalGoplsVersion = async (cfg: LanguageServerConfig) => {
 		case 1:
 			// Built in $GOPATH mode. Should update.
 			// TODO: Should we check the Go version here?
-			// Do we even allow users to enable gopls if their Go version is too low?
+			// Do we even allow users to enable goplsp if their Go version is too low?
 			return null;
 		case 2:
 			// We might actually have a parseable version.
@@ -1259,16 +1260,16 @@ export const getLocalGoplsVersion = async (cfg: LanguageServerConfig) => {
 	// The second line should be the sum line.
 	// It should look something like this:
 	//
-	//    golang.org/x/tools/gopls@v0.1.3 h1:CB5ECiPysqZrwxcyRjN+exyZpY0gODTZvNiqQi3lpeo=
+	//    golang.org/x/tools/goplsp@v0.1.3 h1:CB5ECiPysqZrwxcyRjN+exyZpY0gODTZvNiqQi3lpeo=
 	//
 	// TODO(stamblerre): We should use a regex to match this, but for now, we split on the @ symbol.
-	// The reasoning for this is that gopls still has a golang.org/x/tools/cmd/gopls binary,
+	// The reasoning for this is that goplsp still has a golang.org/x/tools/cmd/goplsp binary,
 	// so users may have a developer version that looks like "golang.org/x/tools@(devel)".
 	const moduleVersion = lines[1].trim().split(' ')[0];
 
 	// Get the relevant portion, that is:
 	//
-	//    golang.org/x/tools/gopls@v0.1.3
+	//    golang.org/x/tools/goplsp@v0.1.3
 	//
 	const split = moduleVersion.trim().split('@');
 	if (split.length < 2) {
@@ -1311,27 +1312,27 @@ async function goProxyRequest(tool: Tool, endpoint: string): Promise<any> {
 	return null;
 }
 
-// errorKind refers to the different possible kinds of gopls errors.
+// errorKind refers to the different possible kinds of goplsp errors.
 enum errorKind {
 	initializationFailure,
 	crash,
 	manualRestart
 }
 
-// suggestGoplsIssueReport prompts users to file an issue with gopls.
-async function suggestGoplsIssueReport(
+// suggestGoplspIssueReport prompts users to file an issue with goplsp.
+async function suggestGoplspIssueReport(
 	msg: string,
 	reason: errorKind,
 	initializationError?: WebRequest.ResponseError<InitializeError>
 ) {
-	// Don't prompt users who manually restart to file issues until gopls/v1.0.
+	// Don't prompt users who manually restart to file issues until goplsp/v1.0.
 	if (reason === errorKind.manualRestart) {
 		return;
 	}
 
-	// The user may have an outdated version of gopls, in which case we should
+	// The user may have an outdated version of goplsp, in which case we should
 	// just prompt them to update, not file an issue.
-	const tool = getTool('gopls');
+	const tool = getTool('goplsp');
 	if (tool) {
 		const versionToUpdate = await shouldUpdateLanguageServer(tool, latestConfig, true);
 		if (versionToUpdate) {
@@ -1343,15 +1344,15 @@ async function suggestGoplsIssueReport(
 	// Show the user the output channel content to alert them to the issue.
 	serverOutputChannel.show();
 
-	if (latestConfig.serverName !== 'gopls') {
+	if (latestConfig.serverName !== 'goplsp') {
 		return;
 	}
-	const promptForIssueOnGoplsRestartKey = 'promptForIssueOnGoplsRestart';
+	const promptForIssueOnGoplspRestartKey = 'promptForIssueOnGoplspRestart';
 	let saved: any;
 	try {
-		saved = JSON.parse(getFromGlobalState(promptForIssueOnGoplsRestartKey, false));
+		saved = JSON.parse(getFromGlobalState(promptForIssueOnGoplspRestartKey, false));
 	} catch (err) {
-		console.log(`Failed to parse as JSON ${getFromGlobalState(promptForIssueOnGoplsRestartKey, true)}: ${err}`);
+		console.log(`Failed to parse as JSON ${getFromGlobalState(promptForIssueOnGoplspRestartKey, true)}: ${err}`);
 		return;
 	}
 	// If the user has already seen this prompt, they may have opted-out for
@@ -1364,12 +1365,12 @@ async function suggestGoplsIssueReport(
 		}
 	}
 
-	const { sanitizedLog, failureReason } = await collectGoplsLog();
+	const { sanitizedLog, failureReason } = await collectGoplspLog();
 
 	// If the user has invalid values for "go.languageServerFlags", we may get
 	// this error. Prompt them to double check their flags.
 	let selected: string;
-	if (failureReason === GoplsFailureModes.INCORRECT_COMMAND_USAGE) {
+	if (failureReason === GoplspFailureModes.INCORRECT_COMMAND_USAGE) {
 		const languageServerFlags = getGoConfig()['languageServerFlags'] as string[];
 		if (languageServerFlags && languageServerFlags.length > 0) {
 			selected = await vscode.window.showInformationMessage(
@@ -1390,7 +1391,7 @@ It is currently set to [${languageServerFlags}]. Please correct the setting by n
 		}
 	}
 	selected = await vscode.window.showInformationMessage(
-		`${msg} Would you like to report a gopls issue on GitHub?
+		`${msg} Would you like to report a goplsp issue on GitHub?
 You will be asked to provide additional information and logs, so PLEASE READ THE CONTENT IN YOUR BROWSER.`,
 		'Yes',
 		'Next time',
@@ -1410,12 +1411,12 @@ You will be asked to provide additional information and logs, so PLEASE READ THE
 						break;
 				}
 				// Get the user's version in case the update prompt above failed.
-				const usersGoplsVersion = await getLocalGoplsVersion(latestConfig);
+				const usersGoplspVersion = await getLocalGoplspVersion(latestConfig);
 				const extInfo = getExtensionInfo();
 				const goVersion = await getGoVersion();
 				const settings = latestConfig.flags.join(' ');
-				const title = `gopls: automated issue report (${errKind})`;
-				const goplsLog = sanitizedLog
+				const title = `goplsp: automated issue report (${errKind})`;
+				const goplspLog = sanitizedLog
 					? `<pre>${sanitizedLog}</pre>`
 					: `Please attach the stack trace from the crash.
 A window with the error message should have popped up in the lower half of your screen.
@@ -1423,13 +1424,13 @@ Please copy the stack trace and error messages from that window and paste it in 
 
 <PASTE STACK TRACE HERE>
 
-Failed to auto-collect gopls trace: ${failureReason}.
+Failed to auto-collect goplsp trace: ${failureReason}.
 `;
 				const now = new Date();
 
 				const body = `
-gopls version: ${usersGoplsVersion}
-gopls flags: ${settings}
+goplsp version: ${usersGoplspVersion}
+goplsp flags: ${settings}
 update flags: ${latestConfig.checkForUpdates}
 extension version: ${extInfo.version}
 go version: ${goVersion?.format(true)}
@@ -1445,9 +1446,9 @@ Describe what you observed.
 
 <ANSWER HERE>
 
-${goplsLog}
+${goplspLog}
 
-OPTIONAL: If you would like to share more information, you can attach your complete gopls logs.
+OPTIONAL: If you would like to share more information, you can attach your complete goplsp logs.
 
 NOTE: THESE MAY CONTAIN SENSITIVE INFORMATION ABOUT YOUR CODEBASE.
 DO NOT SHARE LOGS IF YOU ARE WORKING IN A PRIVATE REPOSITORY.
@@ -1462,7 +1463,7 @@ DO NOT SHARE LOGS IF YOU ARE WORKING IN A PRIVATE REPOSITORY.
 			break;
 		case 'Never':
 			updateGlobalState(
-				promptForIssueOnGoplsRestartKey,
+				promptForIssueOnGoplspRestartKey,
 				JSON.stringify({
 					prompt: false,
 					date: new Date()
@@ -1474,7 +1475,7 @@ DO NOT SHARE LOGS IF YOU ARE WORKING IN A PRIVATE REPOSITORY.
 
 export function showServerOutputChannel() {
 	if (!languageServerIsRunning) {
-		vscode.window.showInformationMessage('gopls is not running');
+		vscode.window.showInformationMessage('goplsp is not running');
 		return;
 	}
 	// likely show() is asynchronous, despite the documentation
@@ -1496,7 +1497,7 @@ export function showServerOutputChannel() {
 		}
 	}
 	if (found === undefined) {
-		vscode.window.showErrorMessage('make sure "gopls (server)" output is showing');
+		vscode.window.showErrorMessage('make sure "goplsp (server)" output is showing');
 	}
 }
 
@@ -1504,7 +1505,7 @@ function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function collectGoplsLog(): Promise<{ sanitizedLog?: string; failureReason?: string }> {
+async function collectGoplspLog(): Promise<{ sanitizedLog?: string; failureReason?: string }> {
 	serverOutputChannel.show();
 	// Find the logs in the output channel. There is no way to read
 	// an output channel directly, but we can find the open text
@@ -1534,22 +1535,22 @@ async function collectGoplsLog(): Promise<{ sanitizedLog?: string; failureReason
 		await sleep((i + 1) * 100);
 	}
 
-	return sanitizeGoplsTrace(logs);
+	return sanitizeGoplspTrace(logs);
 }
 
-enum GoplsFailureModes {
-	NO_GOPLS_LOG = 'no gopls log',
+enum GoplspFailureModes {
+	NO_GOPLS_LOG = 'no goplsp log',
 	EMPTY_PANIC_TRACE = 'empty panic trace',
 	INCOMPLETE_PANIC_TRACE = 'incomplete panic trace',
-	INCORRECT_COMMAND_USAGE = 'incorrect gopls command usage',
+	INCORRECT_COMMAND_USAGE = 'incorrect goplsp command usage',
 	UNRECOGNIZED_CRASH_PATTERN = 'unrecognized crash pattern'
 }
 
 // capture only panic stack trace and the initialization error message.
 // exported for testing.
-export function sanitizeGoplsTrace(logs?: string): { sanitizedLog?: string; failureReason?: string } {
+export function sanitizeGoplspTrace(logs?: string): { sanitizedLog?: string; failureReason?: string } {
 	if (!logs) {
-		return { failureReason: GoplsFailureModes.NO_GOPLS_LOG };
+		return { failureReason: GoplspFailureModes.NO_GOPLS_LOG };
 	}
 	const panicMsgBegin = logs.lastIndexOf('panic: ');
 	if (panicMsgBegin > -1) {
@@ -1561,7 +1562,7 @@ export function sanitizeGoplsTrace(logs?: string): { sanitizedLog?: string; fail
 			const sanitized = panicTrace
 				.split('\n')
 				.map((line: string) => {
-					// Even though this is a crash from gopls, the file path
+					// Even though this is a crash from goplsp, the file path
 					// can contain user names and user's filesystem directory structure.
 					// We can still locate the corresponding file if the file base is
 					// available because the full package path is part of the function
@@ -1579,9 +1580,9 @@ export function sanitizeGoplsTrace(logs?: string): { sanitizedLog?: string; fail
 			if (sanitized) {
 				return { sanitizedLog: sanitized };
 			}
-			return { failureReason: GoplsFailureModes.EMPTY_PANIC_TRACE };
+			return { failureReason: GoplspFailureModes.EMPTY_PANIC_TRACE };
 		}
-		return { failureReason: GoplsFailureModes.INCOMPLETE_PANIC_TRACE };
+		return { failureReason: GoplspFailureModes.INCOMPLETE_PANIC_TRACE };
 	}
 	const initFailMsgBegin = logs.lastIndexOf('Starting client failed');
 	if (initFailMsgBegin > -1) {
@@ -1597,10 +1598,10 @@ export function sanitizeGoplsTrace(logs?: string): { sanitizedLog?: string; fail
 			};
 		}
 	}
-	if (logs.lastIndexOf('Usage: gopls') > -1) {
-		return { failureReason: GoplsFailureModes.INCORRECT_COMMAND_USAGE };
+	if (logs.lastIndexOf('Usage: goplsp') > -1) {
+		return { failureReason: GoplspFailureModes.INCORRECT_COMMAND_USAGE };
 	}
-	return { failureReason: GoplsFailureModes.UNRECOGNIZED_CRASH_PATTERN };
+	return { failureReason: GoplspFailureModes.UNRECOGNIZED_CRASH_PATTERN };
 }
 
 function languageServerUsingDefault(cfg: vscode.WorkspaceConfiguration): boolean {

@@ -107,9 +107,9 @@ suite('getCheckForToolUpdatesConfig tests', () => {
 	});
 });
 
-suite('gopls update tests', () => {
+suite('goplsp update tests', () => {
 	test('prompt for update', async () => {
-		const tool = getTool('gopls');
+		const tool = getTool('goplsp');
 
 		const toSemver = (v: string) => semver.parse(v, { includePrerelease: true, loose: true });
 
@@ -151,7 +151,7 @@ suite('gopls update tests', () => {
 			]
 		];
 		for (const [name, usersVersion, acceptPrerelease, want] of testCases) {
-			sinon.replace(lsp, 'getLocalGoplsVersion', async () => {
+			sinon.replace(lsp, 'getLocalGoplspVersion', async () => {
 				return usersVersion;
 			});
 			sinon.replace(goInstallTools, 'latestToolVersion', async () => {
@@ -170,7 +170,7 @@ suite('gopls update tests', () => {
 			});
 			const got = await lsp.shouldUpdateLanguageServer(tool, {
 				enabled: true,
-				path: 'bad/path/to/gopls',
+				path: 'bad/path/to/goplsp',
 				version: '',
 				checkForUpdates: 'proxy',
 				env: {},
@@ -179,7 +179,7 @@ suite('gopls update tests', () => {
 				},
 				flags: [],
 				modtime: new Date(),
-				serverName: 'gopls'
+				serverName: 'goplsp'
 			});
 			assert.deepEqual(got, want, `${name}: failed (got: '${got}' ${typeof got} want: '${want}' ${typeof want})`);
 			sinon.restore();

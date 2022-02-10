@@ -9,7 +9,7 @@
 
 import path = require('path');
 import vscode = require('vscode');
-import { getGoplsConfig } from './config';
+import { getGoplspConfig } from './config';
 import { goBuild } from './goBuild';
 import { buildLanguageServerConfig } from './goLanguageServer';
 import { goLint } from './goLint';
@@ -112,9 +112,9 @@ export function check(fileUri: vscode.Uri, goConfig: vscode.WorkspaceConfigurati
 	}
 
 	if (!!goConfig['lintOnSave'] && goConfig['lintOnSave'] !== 'off') {
-		const goplsConfig = getGoplsConfig(fileUri);
+		const goplspConfig = getGoplspConfig(fileUri);
 		runningToolsPromises.push(
-			goLint(fileUri, goConfig, goplsConfig, goConfig['lintOnSave']).then((errors) => ({
+			goLint(fileUri, goConfig, goplspConfig, goConfig['lintOnSave']).then((errors) => ({
 				diagnosticCollection: lintDiagnosticCollection,
 				errors
 			}))

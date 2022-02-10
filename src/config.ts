@@ -11,9 +11,9 @@ export const getGoConfig = (uri?: vscode.Uri) => {
 	return getConfig('go', uri);
 };
 
-// getGoplsConfig returns the user's gopls configuration.
-export function getGoplsConfig(uri?: vscode.Uri) {
-	return getConfig('gopls', uri);
+// getGoplspConfig returns the user's goplsp configuration.
+export function getGoplspConfig(uri?: vscode.Uri) {
+	return getConfig('goplsp', uri);
 }
 
 function getConfig(section: string, uri?: vscode.Uri) {

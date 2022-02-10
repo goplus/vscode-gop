@@ -40,7 +40,7 @@ async function main() {
 		failed = true;
 	}
 
-	// Integration tests using gopls.
+	// Integration tests using goplsp.
 	try {
 		// Note: Code in test environment does not support dynamically adding folders.
 		// tslint:disable-next-line:max-line-length
@@ -48,7 +48,7 @@ async function main() {
 		await runTests({
 			version,
 			extensionDevelopmentPath,
-			extensionTestsPath: path.resolve(__dirname, './gopls/index'),
+			extensionTestsPath: path.resolve(__dirname, './goplsp/index'),
 			launchArgs: [
 				'--disable-extensions', // disable all other extensions
 				`--user-data-dir=${extensionDevelopmentPath}/.user-data-dir-test`,
@@ -57,7 +57,7 @@ async function main() {
 			]
 		});
 	} catch (err) {
-		console.error('Failed to run gopls tests' + err);
+		console.error('Failed to run goplsp tests' + err);
 		failed = true;
 	}
 

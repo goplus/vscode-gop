@@ -38,7 +38,7 @@ const runningTestProcesses: cp.ChildProcess[] = [];
 // uses !unicode.isLower to find test/example/benchmark functions.
 // There could be slight difference between \P{Ll} (not lowercase letter)
 // & go unicode package's uppercase detection. But hopefully
-// these will be replaced by gopls's codelens computation soon.
+// these will be replaced by goplsp's codelens computation soon.
 const testFuncRegex = /^Test$|^Test\P{Ll}.*|^Example$|^Example\P{Ll}.*/u;
 const testMethodRegex = /^\(([^)]+)\)\.(Test|Test\P{Ll}.*)$/u;
 const benchmarkRegex = /^Benchmark$|^Benchmark\P{Ll}.*/u;

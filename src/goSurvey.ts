@@ -7,7 +7,7 @@
 'use strict';
 
 import vscode = require('vscode');
-import { getLocalGoplsVersion, lastUserAction, latestConfig } from './goLanguageServer';
+import { getLocalGoplspVersion, lastUserAction, latestConfig } from './goLanguageServer';
 import { outputChannel } from './goStatus';
 import { extensionId } from './const';
 import { getFromGlobalState, getFromWorkspaceState, updateGlobalState } from './stateUtils';
@@ -19,9 +19,9 @@ import {
 } from './goDeveloperSurvey';
 import { getGoConfig } from './config';
 
-// GoplsSurveyConfig is the set of global properties used to determine if
-// we should prompt a user to take the gopls survey.
-export interface GoplsSurveyConfig {
+// GoplspSurveyConfig is the set of global properties used to determine if
+// we should prompt a user to take the goplsp survey.
+export interface GoplspSurveyConfig {
 	// prompt is true if the user can be prompted to take the survey.
 	// It is false if the user has responded "Never" to the prompt.
 	prompt?: boolean;
@@ -47,7 +47,7 @@ export interface GoplsSurveyConfig {
 	lastDateAccepted?: Date;
 }
 
-export function maybePromptForGoplsSurvey() {
+export function maybePromptForGoplspSurvey() {
 	// First, check the value of the 'go.survey.prompt' setting to see
 	// if the user has opted out of all survey prompts.
 	const goConfig = getGoConfig();
@@ -55,7 +55,7 @@ export function maybePromptForGoplsSurvey() {
 		return;
 	}
 	const now = new Date();
-	let cfg = shouldPromptForSurvey(now, getGoplsSurveyConfig());
+	let cfg = shouldPromptForSurvey(now, getGoplspSurveyConfig());
 	if (!cfg) {
 		return;
 	}
@@ -70,22 +70,22 @@ export function maybePromptForGoplsSurvey() {
 			setTimeout(callback, 5 * timeMinute);
 			return;
 		}
-		cfg = await promptForGoplsSurvey(cfg, now);
+		cfg = await promptForGoplspSurvey(cfg, now);
 		if (cfg) {
-			flushSurveyConfig(goplsSurveyConfig, cfg);
+			flushSurveyConfig(goplspSurveyConfig, cfg);
 		}
 	};
 	const ms = msBetween(now, cfg.dateToPromptThisMonth);
 	setTimeout(callback, ms);
 }
 
-export function shouldPromptForSurvey(now: Date, cfg: GoplsSurveyConfig): GoplsSurveyConfig {
+export function shouldPromptForSurvey(now: Date, cfg: GoplspSurveyConfig): GoplspSurveyConfig {
 	// If the prompt value is not set, assume we haven't prompted the user
 	// and should do so.
 	if (cfg.prompt === undefined) {
 		cfg.prompt = true;
 	}
-	flushSurveyConfig(goplsSurveyConfig, cfg);
+	flushSurveyConfig(goplspSurveyConfig, cfg);
 	if (!cfg.prompt) {
 		return;
 	}
@@ -133,7 +133,7 @@ export function shouldPromptForSurvey(now: Date, cfg: GoplsSurveyConfig): GoplsS
 		cfg.dateToPromptThisMonth = undefined;
 	}
 	cfg.dateComputedPromptThisMonth = now;
-	flushSurveyConfig(goplsSurveyConfig, cfg);
+	flushSurveyConfig(goplspSurveyConfig, cfg);
 	return cfg;
 }
 
@@ -144,7 +144,7 @@ function randomIntInRange(min: number, max: number): number {
 	return Math.floor(Math.random() * (high - low + 1)) + low;
 }
 
-async function promptForGoplsSurvey(cfg: GoplsSurveyConfig, now: Date): Promise<GoplsSurveyConfig> {
+async function promptForGoplspSurvey(cfg: GoplspSurveyConfig, now: Date): Promise<GoplspSurveyConfig> {
 	let selected = await vscode.window.showInformationMessage(
 		`Looks like you are using the Go extension for VS Code.
 Could you help us improve this extension by filling out a 1-2 minute survey about your experience with it?`,
@@ -161,9 +161,9 @@ Could you help us improve this extension by filling out a 1-2 minute survey abou
 			{
 				cfg.lastDateAccepted = now;
 				cfg.prompt = true;
-				const goplsEnabled = latestConfig.enabled;
-				const usersGoplsVersion = await getLocalGoplsVersion(latestConfig);
-				const surveyURL = `https://google.qualtrics.com/jfe/form/SV_agUVNbrDS0Cak2W?usingGopls=${goplsEnabled}&gopls=${usersGoplsVersion}&extid=${extensionId}`;
+				const goplspEnabled = latestConfig.enabled;
+				const usersGoplspVersion = await getLocalGoplspVersion(latestConfig);
+				const surveyURL = `https://google.qualtrics.com/jfe/form/SV_agUVNbrDS0Cak2W?usingGoplsp=${goplspEnabled}&goplsp=${usersGoplspVersion}&extid=${extensionId}`;
 				await vscode.env.openExternal(vscode.Uri.parse(surveyURL));
 			}
 			break;
@@ -198,14 +198,14 @@ To opt-out of all survey prompts, please disable the 'Go > Survey: Prompt' setti
 	return cfg;
 }
 
-export const goplsSurveyConfig = 'goplsSurveyConfig';
+export const goplspSurveyConfig = 'goplspSurveyConfig';
 
-function getGoplsSurveyConfig(): GoplsSurveyConfig {
-	return getStateConfig(goplsSurveyConfig) as GoplsSurveyConfig;
+function getGoplspSurveyConfig(): GoplspSurveyConfig {
+	return getStateConfig(goplspSurveyConfig) as GoplspSurveyConfig;
 }
 
 export function resetSurveyConfigs() {
-	flushSurveyConfig(goplsSurveyConfig, null);
+	flushSurveyConfig(goplspSurveyConfig, null);
 	flushSurveyConfig(developerSurveyConfig, null);
 }
 
@@ -245,7 +245,7 @@ export function getStateConfig(globalStateKey: string, workspace?: boolean): any
 export async function showSurveyConfig() {
 	// TODO(rstambler): Add developer survey config.
 	outputChannel.appendLine('HaTs Survey Configuration');
-	outputChannel.appendLine(JSON.stringify(getGoplsSurveyConfig(), null, 2));
+	outputChannel.appendLine(JSON.stringify(getGoplspSurveyConfig(), null, 2));
 	outputChannel.show();
 
 	outputChannel.appendLine('Developer Survey Configuration');
@@ -255,10 +255,10 @@ export async function showSurveyConfig() {
 	let selected = await vscode.window.showInformationMessage('Prompt for HaTS survey?', 'Yes', 'Maybe', 'No');
 	switch (selected) {
 		case 'Yes':
-			promptForGoplsSurvey(getGoplsSurveyConfig(), new Date());
+			promptForGoplspSurvey(getGoplspSurveyConfig(), new Date());
 			break;
 		case 'Maybe':
-			maybePromptForGoplsSurvey();
+			maybePromptForGoplspSurvey();
 			break;
 		default:
 			break;

@@ -48,7 +48,7 @@ async function golist(): Promise<string[]> {
 				vscode.window.activeTextEditor.document
 			).uri;
 			const params: ExecuteCommandParams = {
-				command: 'gopls.list_known_packages',
+				command: 'goplsp.list_known_packages',
 				arguments: [
 					{
 						URI: uri
@@ -58,7 +58,7 @@ async function golist(): Promise<string[]> {
 			const resp = await languageClient.sendRequest(ExecuteCommandRequest.type, params);
 			return resp.Packages;
 		} catch (e) {
-			console.log(`error with gopls.list_known_packages: ${e}`);
+			console.log(`error with goplsp.list_known_packages: ${e}`);
 		}
 	}
 
@@ -168,7 +168,7 @@ export function addImport(arg: { importPath: string }) {
 					vscode.window.activeTextEditor.document
 				).uri;
 				const params: ExecuteCommandParams = {
-					command: 'gopls.add_import',
+					command: 'goplsp.add_import',
 					arguments: [
 						{
 							ImportPath: imp,
@@ -179,7 +179,7 @@ export function addImport(arg: { importPath: string }) {
 				await languageClient.sendRequest(ExecuteCommandRequest.type, params);
 				return;
 			} catch (e) {
-				console.log(`error executing gopls.add_import: ${e}`);
+				console.log(`error executing goplsp.add_import: ${e}`);
 			}
 		}
 

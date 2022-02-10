@@ -127,7 +127,7 @@ async function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-suite('Go Extension Tests With Gopls', function () {
+suite('Go Extension Tests With Goplsp', function () {
 	this.timeout(300000);
 	const projectDir = path.join(__dirname, '..', '..', '..');
 	const testdataDir = path.join(projectDir, 'test', 'testdata');
@@ -202,9 +202,9 @@ suite('Go Extension Tests With Gopls', function () {
 		for (const [name, position, wantFilterText] of testCases) {
 			let list: vscode.CompletionList<vscode.CompletionItem>;
 			// Query completion items. We expect the hard coded filter text hack
-			// has been applied and gopls returns an incomplete list by default
+			// has been applied and goplsp returns an incomplete list by default
 			// to avoid reordering by vscode. But, if the query is made before
-			// gopls is ready, we observed that gopls returns an empty result
+			// goplsp is ready, we observed that goplsp returns an empty result
 			// as a complete result, and vscode returns a general completion list instead.
 			// Retry a couple of times if we see a complete result as a workaround.
 			// (github.com/golang/vscode-go/issues/363)
@@ -222,18 +222,18 @@ suite('Go Extension Tests With Gopls', function () {
 			}
 			// Confirm that the hardcoded filter text hack has been applied.
 			if (!list.isIncomplete) {
-				assert.fail('gopls should provide an incomplete list by default');
+				assert.fail('goplsp should provide an incomplete list by default');
 			}
 
 			// vscode.executeCompletionItemProvider will return results from all
-			// registered completion item providers, not only gopls but also snippets.
+			// registered completion item providers, not only goplsp but also snippets.
 			// Alternative is to directly query the language client, but that will
 			// prevent us from detecting problems caused by issues between the language
 			// client library and the vscode.
 			for (const item of list.items) {
 				if (item.kind === vscode.CompletionItemKind.Snippet) {
 					continue;
-				} // gopls does not supply Snippet yet.
+				} // goplsp does not supply Snippet yet.
 				assert.strictEqual(
 					item.filterText ?? item.label,
 					wantFilterText,

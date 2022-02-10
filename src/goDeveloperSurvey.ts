@@ -16,7 +16,7 @@ export const startDate = new Date('2021-10-27');
 export const endDate = new Date('2021-11-16');
 
 // DeveloperSurveyConfig is the set of global properties used to determine if
-// we should prompt a user to take the gopls survey.
+// we should prompt a user to take the goplsp survey.
 export interface DeveloperSurveyConfig {
 	// prompt is true if the user can be prompted to take the survey.
 	// It is false if the user has responded "Never" to the prompt.

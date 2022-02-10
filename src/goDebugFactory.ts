@@ -520,7 +520,7 @@ function spawnDlvDapServerProcess(
 	logConsole(`Starting: ${dlvPath} ${dlvArgs.join(' ')} from ${dir}\n`);
 
 	// TODO(hyangah): In module-module workspace mode, the program should be build in the super module directory
-	// where go.work (gopls.mod) file is present. Where dlv runs determines the build directory currently. Two options:
+	// where go.work (goplsp.mod) file is present. Where dlv runs determines the build directory currently. Two options:
 	//  1) launch dlv in the super-module module directory and adjust launchArgs.cwd (--wd).
 	//  2) introduce a new buildDir launch attribute.
 	return new Promise<ChildProcess>((resolve, reject) => {

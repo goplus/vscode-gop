@@ -13,7 +13,7 @@ import fs = require('fs');
 import path = require('path');
 import semver = require('semver');
 import { ConfigurationTarget } from 'vscode';
-import { getGoConfig, getGoplsConfig } from './config';
+import { getGoConfig, getGoplspConfig } from './config';
 import { toolExecutionEnvironment, toolInstallationEnvironment } from './goEnv';
 import { addGoRuntimeBaseToPATH, clearGoRuntimeBaseFromPATH } from './goEnvironmentStatus';
 import { logVerbose } from './goLogging';
@@ -54,7 +54,7 @@ const declinedInstalls: Tool[] = [];
 
 export async function installAllTools(updateExistingToolsOnly = false) {
 	const goVersion = await getGoVersion();
-	let allTools = getConfiguredTools(goVersion, getGoConfig(), getGoplsConfig());
+	let allTools = getConfiguredTools(goVersion, getGoConfig(), getGoplspConfig());
 
 	// exclude tools replaced by alternateTools.
 	const alternateTools: { [key: string]: string } = getGoConfig().get('alternateTools');
@@ -166,7 +166,7 @@ export async function installTools(
 		const failed = await installTool(tool, goVersion, envForTools, !modulesOffForTool);
 		if (failed) {
 			failures.push({ tool, reason: failed });
-		} else if (tool.name === 'gopls') {
+		} else if (tool.name === 'goplsp') {
 			// Restart the language server if a new binary has been installed.
 			restartLanguageServer('installation');
 		}
@@ -432,7 +432,7 @@ export async function promptForUpdatingTool(
 	}
 
 	let choices: string[] = ['Update'];
-	if (toolName === 'gopls') {
+	if (toolName === 'goplsp') {
 		choices = ['Always Update', 'Update Once', 'Release Notes'];
 	}
 	if (toolName === 'dlv') {
@@ -525,7 +525,7 @@ export function updateGoVarsFromConfig(): Promise<void> {
 					}
 				}
 
-				// cgo, gopls, and other underlying tools will inherit the environment and attempt
+				// cgo, goplsp, and other underlying tools will inherit the environment and attempt
 				// to locate 'go' from the PATH env var.
 				// Update the PATH only if users configured to use a different
 				// version of go than the system default found from PATH (or Path).
@@ -602,7 +602,7 @@ export async function offerToInstallTools() {
 }
 
 function getMissingTools(goVersion: GoVersion): Promise<Tool[]> {
-	const keys = getConfiguredTools(goVersion, getGoConfig(), getGoplsConfig());
+	const keys = getConfiguredTools(goVersion, getGoConfig(), getGoplspConfig());
 	return Promise.all<Tool>(
 		keys.map(
 			(tool) =>

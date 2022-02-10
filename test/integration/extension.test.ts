@@ -12,7 +12,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { getGoConfig, getGoplsConfig } from '../../src/config';
+import { getGoConfig, getGoplspConfig } from '../../src/config';
 import { FilePatch, getEdits, getEditsFromUnifiedDiffStr } from '../../src/diffUtils';
 import { check } from '../../src/goCheck';
 import { GoDefinitionProvider } from '../../src/goDeclaration';
@@ -425,11 +425,11 @@ It returns the number of bytes written and any write error encountered.
 			lintTool: { value: process.platform !== 'win32' ? 'sleep' : 'timeout' },
 			lintFlags: { value: process.platform !== 'win32' ? ['2'] : ['/t', '2'] }
 		});
-		const goplsConfig = Object.create(getGoplsConfig(), {});
+		const goplspConfig = Object.create(getGoplspConfig(), {});
 
 		const results = await Promise.all([
-			goLint(vscode.Uri.file(path.join(fixturePath, 'linterTest', 'linter_1.go')), config, goplsConfig),
-			goLint(vscode.Uri.file(path.join(fixturePath, 'linterTest', 'linter_2.go')), config, goplsConfig)
+			goLint(vscode.Uri.file(path.join(fixturePath, 'linterTest', 'linter_1.go')), config, goplspConfig),
+			goLint(vscode.Uri.file(path.join(fixturePath, 'linterTest', 'linter_2.go')), config, goplspConfig)
 		]);
 		assert.equal(util.runTool.callCount, 2, 'should have launched 2 lint jobs');
 		assert.equal(
@@ -463,7 +463,7 @@ It returns the number of bytes written and any write error encountered.
 				// but this test depends on ST1003 (MixedCaps package name) presented in both files
 				// in the same package. So, enable that.
 			}),
-			Object.create(getGoplsConfig(), {}),
+			Object.create(getGoplspConfig(), {}),
 			'package'
 		);
 
@@ -1420,10 +1420,10 @@ encountered.
 	});
 
 	test('Build Tags checking', async () => {
-		const goplsConfig = buildLanguageServerConfig(getGoConfig());
-		if (goplsConfig.enabled) {
-			// Skip this test if gopls is enabled. Build/Vet checks this test depend on are
-			// disabled when the language server is enabled, and gopls is not handling tags yet.
+		const goplspConfig = buildLanguageServerConfig(getGoConfig());
+		if (goplspConfig.enabled) {
+			// Skip this test if goplsp is enabled. Build/Vet checks this test depend on are
+			// disabled when the language server is enabled, and goplsp is not handling tags yet.
 			return;
 		}
 		// Note: The following checks can't be parallelized because the underlying go build command
