@@ -27,7 +27,7 @@ export class WelcomePanel {
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
 			WelcomePanel.viewType,
-			'Go for VS Code',
+			'Goplus for VS Code',
 			column || vscode.ViewColumn.One,
 			{
 				// Enable javascript in the webview
@@ -37,7 +37,7 @@ export class WelcomePanel {
 				localResourceRoots: [joinPath(extensionUri)]
 			}
 		);
-		panel.iconPath = joinPath(extensionUri, 'media', 'go-logo-blue.png');
+		panel.iconPath = joinPath(extensionUri, 'media', 'goplus-logo-white.png');
 
 		WelcomePanel.currentPanel = new WelcomePanel(panel, extensionUri);
 	}
@@ -109,7 +109,7 @@ export class WelcomePanel {
 		const scriptPathOnDisk = joinPath(this.dataroot, 'welcome.js');
 		const stylePath = joinPath(this.dataroot, 'welcome.css');
 		const announcePath = vscode.Uri.joinPath(this.dataroot, 'announce.png');
-		const gopherPath = joinPath(this.dataroot, 'go-logo-blue.png');
+		const gopherPath = joinPath(this.dataroot, 'goplus-logo-white.svg');
 		const goExtension = vscode.extensions.getExtension(extensionId)!;
 		const goExtensionVersion = goExtension.packageJSON.version;
 
@@ -133,24 +133,22 @@ export class WelcomePanel {
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${stylesURI}" rel="stylesheet">
-				<title>Go for VS Code</title>
+				<title>Goplus for VS Code</title>
 			</head>
 			<body>
 			<main class="Content">
 			<div class="Header">
 				<img src="${gopherURI}" alt="Go Logo" class="Header-logo"/>
 				<div class="Header-details">
-					<h1 class="Header-title">Go for VS Code v${goExtensionVersion}</h1>
-					<p>The official Go extension for Visual Studio Code, providing rich language support for Go projects.</p>
+					<h1 class="Header-title">Goplus for VS Code v${goExtensionVersion}</h1>
+					<p>The official Goplus extension for Visual Studio Code, providing rich language support for Go projects.</p>
 					<ul class="Header-links">
 						<!--
 							Here and elsewhere, we must use a fake anchor for command buttons, to get styling
 							consistent with links. We can't fake this using CSS, as it conflicts with theming.
 						-->
 						<li><a href="#" class="Command" data-command="openDocument" data-document="CHANGELOG.md">Release notes</a></li>
-						<li><a href="https://github.com/golang/vscode-go">GitHub</a></li>
-						<li><a href="https://stackoverflow.com/questions/tagged/go+visual-studio-code">Questions</a></li>
-						<li><a href="https://invite.slack.golangbridge.org/">Slack</a></li>
+						<li><a href="https://github.com/goplus/vscode-gop">GitHub</a></li>
 					</ul>
 				</div>
 			</div>
@@ -158,10 +156,10 @@ export class WelcomePanel {
 			<div class="Announcement">
 				<img src="${announceURI}" alt="announce" class="Announcement-image" />
 				<p>
-					New! <a href="https://github.com/golang/vscode-go/blob/master/docs/debugging.md#remote-debugging">Remote
+					New! <a href="https://github.com/goplus/vscode-gop/blob/master/docs/debugging.md#remote-debugging">Remote
 					attach debugging</a> is now available on demand via Delve's native DAP implementation with Delve v1.7.3 or newer.
 					We plan to enable this as the default in early 2022 to enhance remote debugging with the same
-					<a href="https://github.com/golang/vscode-go/blob/master/docs/debugging.md">debugging features</a>
+					<a href="https://github.com/goplus/vscode-gop/blob/master/docs/debugging.md">debugging features</a>
                     that are already in use for local debugging.
 				</p>
 			</div>
@@ -171,16 +169,16 @@ export class WelcomePanel {
 					<div class="Card-inner">
 						<p class="Card-title">Getting started</p>
 						<p class="Card-content">Learn about the Go extension in our
-							<a href="https://github.com/golang/vscode-go/blob/master/README.md">README</a>.
+							<a href="https://github.com/goplus/vscode-gop/blob/master/README.md">README</a>.
 						</p>
 					</div>
 				</div>
 
 				<div class="Card">
 					<div class="Card-inner">
-						<p class="Card-title">Learning Go</p>
+						<p class="Card-title">Learning Goplus</p>
 						<p class="Card-content">If you're new to the Go programming language,
-							<a href="https://go.dev/learn">go.dev/learn</a> is a great place to get started.</a>
+							<a href="https://goplus.org/">go.dev/learn</a> is a great place to get started.</a>
 						</p>
 					</div>
 				</div>
@@ -189,7 +187,7 @@ export class WelcomePanel {
 					<div class="Card-inner">
 						<p class="Card-title">Troubleshooting</p>
 						<p class="Card-content">Experiencing problems? Start with our
-							<a href="https://github.com/golang/vscode-go/blob/master/docs/troubleshooting.md">troubleshooting guide</a>.  </p> </div>
+							<a href="https://github.com/goplus/vscode-gop/blob/master/docs/troubleshooting.md">troubleshooting guide</a>.  </p> </div>
 				</div>
 			</div>
 			</main>
