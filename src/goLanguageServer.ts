@@ -489,6 +489,7 @@ export async function buildLanguageClient(cfg: BuildLanguageClientOption): Promi
 	const documentSelector = [
 		// gopls handles only file URIs.
 		{ language: 'go', scheme: 'file' },
+		{ language: 'gop', scheme: 'file' },
 		{ language: 'go.mod', scheme: 'file' },
 		{ language: 'go.sum', scheme: 'file' },
 		{ language: 'go.work', scheme: 'file' },
