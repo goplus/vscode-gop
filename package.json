@@ -1,12 +1,12 @@
 {
-  "name": "go",
+  "name": "gop",
   "displayName": "Go",
-  "version": "0.32.0-dev",
+  "version": "0.1.0-devv",
   "preview": true,
-  "publisher": "golang",
+  "publisher": "goplus",
   "description": "Rich Go language support for Visual Studio Code",
   "author": {
-    "name": "Go Team at Google"
+    "name": "Goplus Team"
   },
   "license": "MIT",
   "icon": "media/go-logo-blue.png",
@@ -25,10 +25,10 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/golang/vscode-go"
+    "url": "https://github.com/goplus/vscode-gop"
   },
   "bugs": {
-    "url": "https://github.com/golang/vscode-go/issues"
+    "url": "https://github.com/goplus/vscode-gop/issues"
   },
   "keywords": [
     "multi-root ready"
@@ -92,9 +92,13 @@
   },
   "activationEvents": [
     "onLanguage:go",
+    "onLanguage:gop",
     "workspaceContains:*.go",
     "workspaceContains:*/*.go",
     "workspaceContains:*/*/*.go",
+    "workspaceContains:*.gop",
+    "workspaceContains:*/*.gop",
+    "workspaceContains:*/*/*.gop",
     "onCommand:go.gopath",
     "onCommand:go.tools.install",
     "onCommand:go.locate.tools",
@@ -102,6 +106,7 @@
     "onCommand:go.run.modinit",
     "onDebugInitialConfigurations",
     "onDebugResolve:go",
+    "onDebugResolve:gop",
     "onWebviewPanel:welcomeGo",
     "onView:go.test.profile"
   ],
@@ -129,6 +134,17 @@
         ],
         "aliases": [
           "Go"
+        ]
+      },
+      {
+        "id": "gop",
+        "extensions": [
+          ".gop",
+          ".gox",
+          ".spx"
+        ],
+        "aliases": [
+          "Goplus"
         ]
       },
       {

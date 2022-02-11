@@ -1022,14 +1022,14 @@ export function getLanguageServerToolPath(): string {
 		return;
 	}
 	// Get the path to gopls (getBinPath checks for alternate tools).
-	const goplsBinaryPath = getBinPath('gopls');
+	const goplsBinaryPath = getBinPath('goplsp');
 	if (path.isAbsolute(goplsBinaryPath)) {
 		return goplsBinaryPath;
 	}
 	const alternateTools = goConfig['alternateTools'];
 	if (alternateTools) {
 		// The user's alternate language server was not found.
-		const goplsAlternate = alternateTools['gopls'];
+		const goplsAlternate = alternateTools['goplsp'];
 		if (goplsAlternate) {
 			vscode.window.showErrorMessage(
 				`Cannot find the alternate tool ${goplsAlternate} configured for gopls.
@@ -1039,8 +1039,8 @@ Please install it and reload this VS Code window.`
 		}
 	}
 
-	// Prompt the user to install gopls.
-	promptForMissingTool('gopls');
+	// Prompt the user to install goplsp.
+	promptForMissingTool('goplsp');
 }
 
 function allFoldersHaveSameGopath(): boolean {

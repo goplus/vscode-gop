@@ -200,6 +200,20 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		latestPrereleaseVersion: semver.parse('v0.7.5'),
 		latestPrereleaseVersionTimestamp: moment('2022-01-18', 'YYYY-MM-DD')
 	},
+	'goplsp': {
+		name: 'goplsp',
+		importPath: 'github.com/goplus/tools/goplsp',
+		modulePath: 'github.com/goplus/tools/goplsp',
+		replacedByGopls: false, // lol
+		isImportant: true,
+		description: 'Language Server from Goplus',
+		usePrereleaseInPreviewMode: true,
+		minimumGoVersion: semver.coerce('1.13'),
+		latestVersion: semver.parse('v0.1.3'),
+		latestVersionTimestamp: moment('2022-01-18', 'YYYY-MM-DD'),
+		latestPrereleaseVersion: semver.parse('v0.1.3'),
+		latestPrereleaseVersionTimestamp: moment('2022-01-18', 'YYYY-MM-DD')
+	},
 	'dlv': {
 		name: 'dlv',
 		importPath: 'github.com/go-delve/delve/cmd/dlv',
