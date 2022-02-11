@@ -208,11 +208,10 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		isImportant: true,
 		description: 'Language Server from Goplus',
 		usePrereleaseInPreviewMode: true,
-		minimumGoVersion: semver.coerce('1.13'),
-		latestVersion: semver.parse('v0.1.3'),
-		latestVersionTimestamp: moment('2022-01-18', 'YYYY-MM-DD'),
-		latestPrereleaseVersion: semver.parse('v0.1.3'),
-		latestPrereleaseVersionTimestamp: moment('2022-01-18', 'YYYY-MM-DD')
+		latestVersion: semver.parse('v0.1.0'),
+		latestVersionTimestamp: moment('2022-02-10', 'YYYY-MM-DD'),
+		latestPrereleaseVersion: semver.parse('v0.1.0'),
+		latestPrereleaseVersionTimestamp: moment('2022-02-10', 'YYYY-MM-DD')
 	},
 	'dlv': {
 		name: 'dlv',

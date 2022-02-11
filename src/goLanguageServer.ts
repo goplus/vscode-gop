@@ -1065,8 +1065,8 @@ export async function shouldUpdateLanguageServer(
 	cfg: LanguageServerConfig,
 	mustCheck?: boolean
 ): Promise<semver.SemVer> {
-	// Only support updating gopls for now.
-	if (tool.name !== 'gopls' || (!mustCheck && (cfg.checkForUpdates === 'off' || IsInCloudIDE))) {
+	// Only support updating goplsp for now.
+	if (tool.name !== 'goplsp' || (!mustCheck && (cfg.checkForUpdates === 'off' || IsInCloudIDE))) {
 		return null;
 	}
 	if (!cfg.enabled) {
