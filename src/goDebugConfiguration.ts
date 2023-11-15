@@ -31,6 +31,7 @@ import { parseEnvFiles } from './utils/envUtils';
 import { resolveHomeDir } from './utils/pathUtils';
 import { createRegisterCommand } from './commands';
 import { GoExtensionContext } from './context';
+let packageJsonData = require('../package.json');
 
 let dlvDAPVersionChecked = false;
 
@@ -169,7 +170,8 @@ export class GoDebugConfigurationProvider implements vscode.DebugConfigurationPr
 		const goConfig = getGoConfig(folder && folder.uri);
 		const dlvConfig = goConfig['delveConfig'];
 		const defaultConfig = vscode.extensions.getExtension(extensionId)?.packageJSON.contributes.configuration
-			.properties['gop.delveConfig'].properties;
+            .properties['gop.delveConfig'].properties ?? packageJsonData.contributes.configuration
+            .properties['gop.delveConfig'].properties;
 
 		// Figure out which debugAdapter is being used first, so we can use this to send warnings
 		// for properties that don't apply.
