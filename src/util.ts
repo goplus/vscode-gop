@@ -29,6 +29,8 @@ import {
 } from './utils/pathUtils';
 import { killProcessTree } from './utils/processUtils';
 
+let packageJsonData = require('../package.json');
+
 let userNameHash = 0;
 
 export const goKeywords: string[] = [
@@ -560,14 +562,14 @@ export function getModuleCache(): string | undefined {
 }
 
 export function getExtensionCommands(): any[] {
-	const pkgJSON = vscode.extensions.getExtension(extensionId)?.packageJSON;
+	const pkgJSON = packageJsonData;
 	if (!pkgJSON.contributes || !pkgJSON.contributes.commands) {
 		return [];
 	}
-	const extensionCommands: any[] = vscode.extensions
-		.getExtension(extensionId)
-		?.packageJSON.contributes.commands.filter((x: any) => x.command !== 'gop.show.commands');
-	return extensionCommands;
+	const extensionCommands: any[] = pkgJSON.contributes.commands.filter((x: any) => x.command !== 'gop.show.commands');
+	const re = /Go+: /gi;
+	const extensionCommandsSort = extensionCommands.sort((a, b) => a.title.replace(re,'').localeCompare(b.title.replace(re,'')));
+	return extensionCommandsSort;
 }
 
 export class LineBuffer {
