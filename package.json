@@ -2890,7 +2890,7 @@
           "group": "Go group 1"
         },
         {
-          "when": "editorTextFocus && resourceLangId == go",
+          "when": "editorTextFocus && (resourceLangId == go || resourceLangId == gop)",
           "command": "gop.show.commands",
           "group": "Go group 2"
         }
