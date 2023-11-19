@@ -15,6 +15,7 @@ import { GoExtensionContext } from './context';
 import { extensionInfo } from './config';
 import { getFromGlobalState, updateGlobalState } from './stateUtils';
 import { createRegisterCommand } from './commands';
+var packageJsonData = require('../package.json');
 
 export class WelcomePanel {
 	public static activate(ctx: vscode.ExtensionContext, goCtx: GoExtensionContext) {
@@ -140,7 +141,7 @@ export class WelcomePanel {
 		const announcePath = vscode.Uri.joinPath(this.dataroot, 'announce.png');
 		const gopherPath = joinPath(this.dataroot, 'goplus-logo-white.svg');
 		const goExtension = vscode.extensions.getExtension(extensionId)!;
-		const goExtensionVersion = goExtension.packageJSON.version;
+		const goExtensionVersion = goExtension?.packageJSON.version ?? packageJsonData.version;
 
 		// Uri to load styles and images into webview
 		const scriptURI = webview.asWebviewUri(scriptPathOnDisk);
