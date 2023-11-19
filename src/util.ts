@@ -28,6 +28,7 @@ import {
 	resolveHomeDir
 } from './utils/pathUtils';
 import { killProcessTree } from './utils/processUtils';
+var packageJsonData = require('../package.json');
 
 let userNameHash = 0;
 
@@ -560,13 +561,11 @@ export function getModuleCache(): string | undefined {
 }
 
 export function getExtensionCommands(): any[] {
-	const pkgJSON = vscode.extensions.getExtension(extensionId)?.packageJSON;
+	const pkgJSON = vscode.extensions.getExtension(extensionId)?.packageJSON ?? packageJsonData;
 	if (!pkgJSON.contributes || !pkgJSON.contributes.commands) {
 		return [];
 	}
-	const extensionCommands: any[] = vscode.extensions
-		.getExtension(extensionId)
-		?.packageJSON.contributes.commands.filter((x: any) => x.command !== 'gop.show.commands');
+	const extensionCommands: any[] = pkgJSON?.contributes.commands.filter((x: any) => x.command !== 'gop.show.commands');
 	return extensionCommands;
 }
 
