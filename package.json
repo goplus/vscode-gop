@@ -57,6 +57,7 @@
     "glob": "7.1.7",
     "json-rpc2": "2.0.0",
     "moment": "2.29.4",
+    "package": "^1.0.1",
     "semver": "7.3.4",
     "tree-kill": "file:third_party/tree-kill",
     "vscode-debugadapter": "1.45.0",
@@ -2107,6 +2108,11 @@
               "type": "string",
               "default": "gopls",
               "description": "Alternate tool to use instead of the gopls binary or alternate path to use for the gopls binary."
+            },
+            "goxls": {
+              "type": "string",
+              "default": "goxls",
+              "description": "Alternate tool to use instead of the goxls binary or alternate path to use for the goxls binary."
             },
             "dlv": {
               "type": "string",

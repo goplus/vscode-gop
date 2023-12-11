@@ -1043,7 +1043,7 @@ export function getLanguageServerToolPath(): string | undefined {
 	const alternateTools = goConfig['alternateTools'];
 	if (alternateTools) {
 		// The user's alternate language server was not found.
-		const goplsAlternate = alternateTools['gopls'];
+		const goplsAlternate = alternateTools[conf.lsName];
 		if (goplsAlternate) {
 			vscode.window.showErrorMessage(
 				`Cannot find the alternate tool ${goplsAlternate} configured for gopls.
@@ -1054,7 +1054,7 @@ Please install it and reload this VS Code window.`
 	}
 
 	// Prompt the user to install gopls.
-	promptForMissingTool('gopls');
+	promptForMissingTool(conf.lsName);
 }
 
 function allFoldersHaveSameGopath(): boolean {
