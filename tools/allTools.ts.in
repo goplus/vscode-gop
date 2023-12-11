@@ -199,15 +199,15 @@ export const allToolsInformation: { [key: string]: Tool } = {
 		description: 'Linter',
 		defaultVersion: 'v1.3.2'
 	},
-	'gopls': {
-		name: 'gopls',
-		importPath: 'golang.org/x/tools/gopls',
-		modulePath: 'golang.org/x/tools/gopls',
+	'goxls': {
+		name: 'goxls', // goxls: Go+
+		importPath: 'github.com/goplus/goxls',
+		modulePath: 'github.com/goplus/goxls',
 		replacedByGopls: false, // lol
 		isImportant: true,
-		description: 'Language Server from Google',
+		description: 'Go+ Language Server',
 		usePrereleaseInPreviewMode: true,
-		minimumGoVersion: semver.coerce('1.13'),
+		minimumGoVersion: semver.coerce('1.18'),
 		latestVersion: semver.parse('%s'),
 		latestVersionTimestamp: moment('%s', 'YYYY-MM-DD'),
 		latestPrereleaseVersion: semver.parse('%s'),

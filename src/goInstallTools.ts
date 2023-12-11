@@ -193,10 +193,10 @@ export async function installTools(
 
 	const failures: { tool: ToolAtVersion; reason: string }[] = [];
 	for (const tool of missing) {
-		const failed = await installToolWithGo(tool, goForInstall, envForTools);
+		const failed = await installToolWithGo(tool, goForInstall, envForTools, tool.name === 'goxls');
 		if (failed) {
 			failures.push({ tool, reason: failed });
-		} else if (tool.name === 'goxls' || tool.name === 'gopls') {
+		} else if (tool.name === 'goxls') {
 			// Restart the language server if a new binary has been installed.
 			vscode.commands.executeCommand('gop.languageserver.restart', RestartReason.INSTALLATION);
 		}
@@ -243,7 +243,8 @@ export async function installTool(tool: ToolAtVersion): Promise<string | undefin
 async function installToolWithGo(
 	tool: ToolAtVersion,
 	goVersion: GoVersion, // go version to be used for installation.
-	envForTools: NodeJS.Dict<string>
+	envForTools: NodeJS.Dict<string>,
+	useGop?: boolean
 ): Promise<string | undefined> {
 	// Some tools may have to be closed before we reinstall them.
 	if (tool.close) {
@@ -264,6 +265,8 @@ async function installToolWithGo(
 	try {
 		if (hasModSuffix(tool)) {
 			await installToolWithGoGet(tool, goVersion, env, importPath);
+		} else if (useGop) {
+			await installToolWithGopInstall(goVersion, env, importPath);
 		} else {
 			await installToolWithGoInstall(goVersion, env, importPath);
 		}
@@ -280,6 +283,20 @@ async function installToolWithGoInstall(goVersion: GoVersion, env: NodeJS.Dict<s
 	// Unlike installToolWithGoGet, `go install` in module mode
 	// can run in the current directory safely. So, use the user-specified go tool path.
 	const goBinary = goVersion?.binaryPath || getBinPath('go');
+	const opts = {
+		env,
+		cwd: getWorkspaceFolderPath()
+	};
+
+	const execFile = util.promisify(cp.execFile);
+	logVerbose(`$ ${goBinary} install -v ${importPath}} (cwd: ${opts.cwd})`);
+	await execFile(goBinary, ['install', '-v', importPath], opts);
+}
+
+async function installToolWithGopInstall(goVersion: GoVersion, env: NodeJS.Dict<string>, importPath: string) {
+	// Unlike installToolWithGoGet, `go install` in module mode
+	// can run in the current directory safely. So, use the user-specified go tool path.
+	const goBinary = getBinPath('gop');
 	const opts = {
 		env,
 		cwd: getWorkspaceFolderPath()
@@ -470,7 +487,7 @@ export async function promptForUpdatingTool(
 	}
 
 	let choices: string[] = ['Update'];
-	if (toolName === 'goxls' || toolName === 'gopls') {
+	if (toolName === 'goxls') {
 		choices = ['Always Update', 'Update Once', 'Release Notes'];
 	}
 	if (toolName === 'dlv') {

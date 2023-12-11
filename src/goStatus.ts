@@ -64,14 +64,14 @@ export const expandGoStatusBar: CommandFactory = (ctx, goCtx) => async () => {
 	// Get the gopls configuration
 	const goConfig = getGoConfig();
 	const cfg = buildLanguageServerConfig(goConfig);
-	if (languageServerIsRunning && cfg.serverName === 'gopls') {
+	if (languageServerIsRunning && cfg.serverName === 'goxls') {
 		const goplsVersion = await getLocalGoplsVersion(cfg);
-		options.push({ label: `${languageServerIcon}Open 'gopls' trace`, description: `${goplsVersion?.version}` });
+		options.push({ label: `${languageServerIcon}Open 'goxls' trace`, description: `${goplsVersion?.version}` });
 	}
 	if (!languageServerIsRunning && !cfg.serverName && goConfig['useLanguageServer'] === true) {
 		options.push({
 			label: 'Install Go Language Server',
-			description: `${languageServerErrorIcon}'gopls' is required but missing`
+			description: `${languageServerErrorIcon}'goxls' is required but missing`
 		});
 	}
 
@@ -93,13 +93,13 @@ export const expandGoStatusBar: CommandFactory = (ctx, goCtx) => async () => {
 				case 'Choose Go Environment':
 					vscode.commands.executeCommand('gop.environment.choose');
 					break;
-				case `${languageServerIcon}Open 'gopls' trace`:
+				case `${languageServerIcon}Open 'goxls' trace`:
 					if (serverOutputChannel) {
 						serverOutputChannel.show();
 					}
 					break;
 				case 'Install Go Language Server':
-					vscode.commands.executeCommand('gop.tools.install', [allToolsInformation['gopls']]);
+					vscode.commands.executeCommand('gop.tools.install', [allToolsInformation['goxls']]);
 					break;
 				case "Open 'go.work'":
 				case "Open 'go.mod'":
@@ -136,7 +136,7 @@ export async function initGoStatusBar(goCtx: GoExtensionContext) {
 	goEnvStatusbarItem.text = goOption.label;
 	goEnvStatusbarItem.command = 'gop.environment.status';
 
-	// Add an icon to indicate that the 'gopls' server is running.
+	// Add an icon to indicate that the 'goxls' server is running.
 	// Assume if it is configured it is already running, since the
 	// icon will be updated on an attempt to start.
 	const goConfig = getGoConfig();

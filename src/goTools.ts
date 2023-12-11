@@ -206,7 +206,7 @@ export function getConfiguredTools(
 	// Even though we arranged this to run after the first attempt to start gopls
 	// this is still useful if we've fail to start gopls.
 	if (useLanguageServer) {
-		maybeAddTool('gopls');
+		maybeAddTool('goxls');
 	}
 
 	if (goLiveErrorsEnabled()) {

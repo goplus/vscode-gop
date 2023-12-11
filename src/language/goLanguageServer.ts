@@ -160,7 +160,7 @@ export function scheduleGoplsSuggestions(goCtx: GoExtensionContext) {
 	}
 	// Some helper functions.
 	const usingGopls = (cfg: LanguageServerConfig): boolean => {
-		return cfg.enabled && cfg.serverName === 'gopls';
+		return cfg.enabled && cfg.serverName === 'goxls';
 	};
 	const usingGo = (): boolean => {
 		return vscode.workspace.textDocuments.some((doc) => doc.languageId === 'go');
@@ -198,7 +198,7 @@ export function scheduleGoplsSuggestions(goCtx: GoExtensionContext) {
 		if (!usingGopls(cfg)) {
 			// This shouldn't happen, but if the user has a non-gopls language
 			// server enabled, we shouldn't prompt them to change.
-			if (cfg.serverName !== '' && cfg.serverName !== 'gopls') {
+			if (cfg.serverName !== '' && cfg.serverName !== 'goxls') {
 				return;
 			}
 			// Check if the language server has now been enabled, and if so,
@@ -424,7 +424,7 @@ export async function buildLanguageClient(
 	goCtx: GoExtensionContext,
 	cfg: BuildLanguageClientOption
 ): Promise<GoLanguageClient> {
-	const goplsWorkspaceConfig = await adjustGoplsWorkspaceConfiguration(cfg, getGoplsConfig(), 'gopls', undefined);
+	const goplsWorkspaceConfig = await adjustGoplsWorkspaceConfiguration(cfg, getGoplsConfig(), 'goxls', undefined);
 
 	const documentSelector = [
 		// gopls handles only file URIs.
@@ -839,7 +839,7 @@ async function adjustGoplsWorkspaceConfiguration(
 	resource?: vscode.Uri
 ): Promise<any> {
 	// We process only gopls config
-	if (section !== 'gopls') {
+	if (section !== 'goxls') {
 		return workspaceConfig;
 	}
 
@@ -1035,7 +1035,7 @@ export function getLanguageServerToolPath(): string | undefined {
 	}
 	// Get the path to gopls (getBinPath checks for alternate tools).
 	// goxls: use goxls instead of gopls
-	// const goplsBinaryPath = getBinPath('gopls');
+	// const goplsBinaryPath = getBinPath('goxls');
 	const goplsBinaryPath = getBinPath(conf.lsName);
 	if (path.isAbsolute(goplsBinaryPath)) {
 		return goplsBinaryPath;
@@ -1043,7 +1043,7 @@ export function getLanguageServerToolPath(): string | undefined {
 	const alternateTools = goConfig['alternateTools'];
 	if (alternateTools) {
 		// The user's alternate language server was not found.
-		const goplsAlternate = alternateTools['gopls'];
+		const goplsAlternate = alternateTools['goxls'];
 		if (goplsAlternate) {
 			vscode.window.showErrorMessage(
 				`Cannot find the alternate tool ${goplsAlternate} configured for gopls.
@@ -1054,7 +1054,7 @@ Please install it and reload this VS Code window.`
 	}
 
 	// Prompt the user to install gopls.
-	promptForMissingTool('gopls');
+	promptForMissingTool('goxls');
 }
 
 function allFoldersHaveSameGopath(): boolean {
@@ -1082,10 +1082,7 @@ export async function shouldUpdateLanguageServer(
 		return null;
 	}
 	// Only support updating gopls/goxls for now.
-	if (
-		(tool.name !== 'gopls' && tool.name !== 'goxls') ||
-		(!mustCheck && (cfg.checkForUpdates === 'off' || extensionInfo.isInCloudIDE))
-	) {
+	if (tool.name !== 'goxls' || (!mustCheck && (cfg.checkForUpdates === 'off' || extensionInfo.isInCloudIDE))) {
 		return null;
 	}
 	if (!cfg.enabled) {
@@ -1390,7 +1387,7 @@ export async function suggestGoplsIssueReport(
 	// Show the user the output channel content to alert them to the issue.
 	goCtx.serverOutputChannel?.show();
 
-	if (goCtx.latestConfig?.serverName !== 'gopls') {
+	if (goCtx.latestConfig?.serverName !== 'goxls') {
 		return;
 	}
 	const promptForIssueOnGoplsRestartKey = 'promptForIssueOnGoplsRestart';

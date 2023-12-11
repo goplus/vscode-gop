@@ -185,9 +185,9 @@ func asVSCodeSettings(options []*OptionJSON) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	goProperties["gopls"] = &Object{
+	goProperties["goxls"] = &Object{
 		Type:                 "object",
-		MarkdownDescription:  "Configure the default Go language server ('gopls'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/gopls/doc/settings.md) for all available settings.",
+		MarkdownDescription:  "Configure the default Go language server ('goxls'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/gopls/doc/settings.md) for all available settings.",
 		Scope:                "resource",
 		AdditionalProperties: false,
 		Properties:           goplsProperties,

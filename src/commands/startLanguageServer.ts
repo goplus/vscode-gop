@@ -75,7 +75,7 @@ export const startLanguageServer: CommandFactory = (ctx, goCtx) => {
 			}
 
 			// If the language server is gopls, we enable a few additional features.
-			if (cfg.serverName === 'gopls') {
+			if (cfg.serverName === 'goxls') {
 				const tool = getTool(conf.lsName);
 				if (tool) {
 					// If the language server is turned on because it is enabled by default,
