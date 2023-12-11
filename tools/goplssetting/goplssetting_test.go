@@ -131,7 +131,7 @@ func TestWriteAsVSCodeSettings(t *testing.T) {
 			{
 				"gopls": {
 					"type": "object",
-					"markdownDescription": "Configure the default Go language server ('gopls'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/gopls/doc/settings.md) for all available settings.",
+					"markdownDescription": "Configure the default Go language server ('goxls'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/gopls/doc/settings.md) for all available settings.",
 					"scope": "resource",
 					"properties": {
 				       `+tc.out+`

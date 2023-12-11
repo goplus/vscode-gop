@@ -20,13 +20,13 @@ suite('gopls configuration tests', () => {
 		const testCases: TestCase[] = [
 			{
 				name: 'user set no gopls settings',
-				section: 'gopls',
+				section: 'goxls',
 				input: defaultGoplsConfig,
 				want: {}
 			},
 			{
 				name: 'user set some gopls settings',
-				section: 'gopls',
+				section: 'goxls',
 				input: Object.assign({}, defaultGoplsConfig, {
 					buildFlags: ['-something'],
 					env: { foo: 'bar' },
@@ -44,7 +44,7 @@ suite('gopls configuration tests', () => {
 			},
 			{
 				name: 'user set extra gopls settings',
-				section: 'gopls',
+				section: 'goxls',
 				input: Object.assign({}, defaultGoplsConfig, {
 					undefinedGoplsSetting: true
 				}),

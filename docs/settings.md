@@ -605,7 +605,7 @@ This section is directly read by `gopls`. See the [`gopls` section](#settings-fo
 
 ## Settings for `gopls`
 
-Configure the default Go language server ('gopls'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/gopls/doc/settings.md) for all available settings.
+Configure the default Go language server ('goxls'). In most cases, configuring this section is unnecessary. See [the documentation](https://github.com/golang/tools/blob/master/gopls/doc/settings.md) for all available settings.
 
 ### `build.allowImplicitNetworkAccess`
 

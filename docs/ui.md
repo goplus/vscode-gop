@@ -35,7 +35,7 @@ When `gopls` is enabled, :zap: is displayed next to the Go version in the status
 
 <div style="text-align: center;"><img src="images/gopls.png" alt="command pallete menu for selecting a new Go version" style="width:100px" > </div>
 
-Selecting `Open 'gopls' trace` will open the trace of the `gopls` server in the output window. Please include this trace when filing an issue related to the extension and `gopls` is enabled.
+Selecting `Open 'goxls' trace` will open the trace of the `gopls` server in the output window. Please include this trace when filing an issue related to the extension and `gopls` is enabled.
 
 ### Modules Status
 

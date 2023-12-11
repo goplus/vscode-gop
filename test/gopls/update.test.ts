@@ -108,7 +108,7 @@ suite('getCheckForToolUpdatesConfig tests', () => {
 });
 
 suite('gopls okForStagedRollout', () => {
-	const tool = getTool('gopls');
+	const tool = getTool('goxls');
 	const sandbox = sinon.createSandbox();
 	teardown(() => {
 		sandbox.restore();
@@ -144,7 +144,7 @@ suite('gopls okForStagedRollout', () => {
 
 suite('gopls update tests', () => {
 	test('prompt for update', async () => {
-		const tool = getTool('gopls');
+		const tool = getTool('goxls');
 
 		const toSemver = (v: string) => semver.parse(v, { includePrerelease: true, loose: true });
 
@@ -213,7 +213,7 @@ suite('gopls update tests', () => {
 				features: {},
 				flags: [],
 				modtime: new Date(),
-				serverName: 'gopls'
+				serverName: 'goxls'
 			});
 			assert.deepEqual(got, want, `${name}: failed (got: '${got}' ${typeof got} want: '${want}' ${typeof want})`);
 			sinon.restore();

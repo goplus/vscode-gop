@@ -167,7 +167,7 @@ suite('Installation Tests', function () {
 		await runTest(
 			[
 				{
-					name: 'gopls',
+					name: 'goxls',
 					versions: ['v0.1.0', 'v1.0.0', 'v1.0.1-pre.2'],
 					wantVersion: config.extensionInfo.isPreview ? 'v1.0.1-pre.2' : 'v1.0.0'
 				}
@@ -179,7 +179,7 @@ suite('Installation Tests', function () {
 	test('Install multiple tools with a local proxy', async () => {
 		await runTest(
 			[
-				{ name: 'gopls', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
+				{ name: 'goxls', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
 				{ name: 'dlv', versions: ['v1.0.0', 'v1.8.0'], wantVersion: 'v1.8.0' }
 			],
 			true
@@ -189,7 +189,7 @@ suite('Installation Tests', function () {
 	test('Install multiple tools with a local proxy & GOBIN', async () => {
 		await runTest(
 			[
-				{ name: 'gopls', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
+				{ name: 'goxls', versions: ['v0.1.0', 'v1.0.0-pre.1', 'v1.0.0'], wantVersion: 'v1.0.0' },
 				{ name: 'dlv', versions: ['v1.0.0', 'v1.8.0'], wantVersion: 'v1.8.0' }
 			],
 			true, // LOCAL PROXY
@@ -199,8 +199,8 @@ suite('Installation Tests', function () {
 
 	test('Try to install with old go', async () => {
 		const oldGo = new GoVersion(getBinPath('go'), 'go version go1.15 amd64/linux');
-		const failures = await installTools([getToolAtVersion('gopls')], oldGo);
-		assert(failures?.length === 1 && failures[0].tool.name === 'gopls' && failures[0].reason.includes('or newer'));
+		const failures = await installTools([getToolAtVersion('goxls')], oldGo);
+		assert(failures?.length === 1 && failures[0].tool.name === 'goxls' && failures[0].reason.includes('or newer'));
 	});
 
 	const gofumptDefault = allToolsInformation['gofumpt'].defaultVersion!;
@@ -291,7 +291,7 @@ suite('getConfiguredTools', () => {
 			{}
 		);
 		const got = configured.map((tool) => tool.name) ?? [];
-		assert(got.includes('gopls'), `omitted 'gopls': ${JSON.stringify(got)}`);
+		assert(got.includes('goxls'), `omitted 'goxls': ${JSON.stringify(got)}`);
 		assert(!got.includes('guru') && !got.includes('gocode'), `suggested legacy tools: ${JSON.stringify(got)}`);
 	});
 
@@ -302,7 +302,7 @@ suite('getConfiguredTools', () => {
 			{}
 		);
 		const got = configured.map((tool) => tool.name) ?? [];
-		assert(!got.includes('gopls'), `suggested 'gopls': ${JSON.stringify(got)}`);
+		assert(!got.includes('goxls'), `suggested 'goxls': ${JSON.stringify(got)}`);
 		assert(got.includes('guru') && got.includes('gocode'), `omitted legacy tools: ${JSON.stringify(got)}`);
 	});
 
@@ -313,7 +313,7 @@ suite('getConfiguredTools', () => {
 			{}
 		);
 		const got = configured.map((tool) => tool.name) ?? [];
-		assert(!got.includes('gopls'), `suggested 'gopls' for old go: ${JSON.stringify(got)}`);
+		assert(!got.includes('goxls'), `suggested 'goxls' for old go: ${JSON.stringify(got)}`);
 		assert(got.includes('guru') && got.includes('gocode'), `omitted legacy tools: ${JSON.stringify(got)}`);
 	});
 });
@@ -351,7 +351,7 @@ suite('listOutdatedTools', () => {
 			staticcheck: 'go1.18', // 1.18 == 1.18
 			gotests: 'go1.19' // 1.19 > 1.18
 		});
-		assert.deepStrictEqual(x, ['gopls', 'dlv']);
+		assert.deepStrictEqual(x, ['goxls', 'dlv']);
 	});
 	test('patch version difference does not require updates', async () => {
 		const x = await runTest('go version go1.16.1 linux/amd64', {
@@ -369,7 +369,7 @@ suite('listOutdatedTools', () => {
 			staticcheck: 'go1.18beta2', // 1.18beta2 == 1.18beta2
 			gotests: 'go1.18' // 1.18 > 1.18beta2
 		});
-		assert.deepStrictEqual(x, ['gopls', 'dlv']);
+		assert.deepStrictEqual(x, ['goxls', 'dlv']);
 	});
 	test('go is dev version', async () => {
 		const x = await runTest('go version devel go1.18-41f485b9a7 linux/amd64', {
