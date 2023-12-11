@@ -24,7 +24,7 @@ extension fits your needs and enhances your development experience.
 
 1.  Install the [VS Code Go/Go+ extension].
 
-1.  Open any directory or workspace containing Go code to automatically activate the
+1.  Open any directory or workspace containing Go/Go+ code to automatically activate the
     extension. The [Go/Go+ status bar](https://github.com/goplus/vscode-gop/wiki/ui) 
     appears in the bottom left corner of the window and displays your Go/Go+ version.
 
