@@ -276,3 +276,23 @@ export function expandFilePathInOutput(output: string, cwd: string): string {
 	}
 	return lines.join('\n');
 }
+
+/**
+ * Returns the path to the go.mod file for the given directory
+ * @param dir
+ * @returns
+ */
+export function getModPath(dir: string): string | undefined {
+	let currentDir = dir;
+
+	while (currentDir !== '/') {
+		const modFilePath = path.join(currentDir, 'go.mod');
+		if (fs.existsSync(modFilePath)) {
+			return currentDir;
+		}
+
+		currentDir = path.dirname(currentDir);
+	}
+
+	return undefined;
+}

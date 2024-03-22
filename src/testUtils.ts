@@ -18,6 +18,7 @@ import { getCurrentPackage } from './goModules';
 import { GoDocumentSymbolProvider } from './goDocumentSymbols';
 import { getNonVendorPackages } from './goPackages';
 import { getBinPath, getCurrentGoPath, getTempFilePath, LineBuffer, resolvePath } from './util';
+import { getModPath } from './utils/pathUtils';
 import { parseEnvFile } from './utils/envUtils';
 import {
 	getEnvPath,
@@ -345,8 +346,15 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 				}
 			});
 
+			const modPath = getModPath(testconfig.dir) || testconfig.dir;
+
 			// go test emits build errors on stderr, which contain paths relative to the cwd
-			errBuf.onLine((line) => outputChannel.appendLine(expandFilePathInOutput(line, testconfig.dir)));
+			errBuf.onLine((line) => {
+				return outputChannel.appendLine(
+					// When go+ test output error occurs, the path thrown by cl is relative to the project root directory
+					expandFilePathInOutput(line, testconfig.isGop ? modPath : testconfig.dir)
+				);
+			});
 			errBuf.onDone((last) => last && outputChannel.appendLine(expandFilePathInOutput(last, testconfig.dir)));
 
 			tp.stdout.on('data', (chunk) => outBuf.append(chunk.toString()));
