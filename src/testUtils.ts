@@ -18,7 +18,7 @@ import { getCurrentPackage } from './goModules';
 import { GoDocumentSymbolProvider } from './goDocumentSymbols';
 import { getNonVendorPackages } from './goPackages';
 import { getBinPath, getCurrentGoPath, getTempFilePath, LineBuffer, resolvePath } from './util';
-import { getModPath } from './utils/pathUtils';
+import { getModFolderPath } from './goModules';
 import { parseEnvFile } from './utils/envUtils';
 import {
 	getEnvPath,
@@ -313,7 +313,7 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 
 	outputChannel.appendLine(['Running tool:', goRuntimePath, ...outArgs].join(' '));
 	outputChannel.appendLine('');
-
+	outputChannel.appendLine('isgop:' + testconfig.isGop);
 	let testResult = false;
 	try {
 		testResult = await new Promise<boolean>(async (resolve, reject) => {
@@ -346,14 +346,14 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 				}
 			});
 
-			const modPath = getModPath(testconfig.dir) || testconfig.dir;
+			// When go+ test output error occurs, the path thrown by cl is relative to the project root directory
+			const errOutputDir = testconfig.isGop
+				? (await getModFolderPath(vscode.Uri.file(testconfig.dir), true)) || testconfig.dir
+				: testconfig.dir;
 
 			// go test emits build errors on stderr, which contain paths relative to the cwd
 			errBuf.onLine((line) => {
-				return outputChannel.appendLine(
-					// When go+ test output error occurs, the path thrown by cl is relative to the project root directory
-					expandFilePathInOutput(line, testconfig.isGop ? modPath : testconfig.dir)
-				);
+				return outputChannel.appendLine(expandFilePathInOutput(line, errOutputDir));
 			});
 			errBuf.onDone((last) => last && outputChannel.appendLine(expandFilePathInOutput(last, testconfig.dir)));
 
