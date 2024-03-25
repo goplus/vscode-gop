@@ -269,7 +269,7 @@ export function getToolFromToolPath(toolPath: string): string | undefined {
 export function expandFilePathInOutput(output: string, cwd: string): string {
 	const lines = output.split('\n');
 	for (let i = 0; i < lines.length; i++) {
-		const matches = lines[i].match(/\s*(\S+\.(go|gop)):(\d+):/);
+		const matches = lines[i].match(/\s*(\S+\.go):(\d+):/);
 		if (matches && matches[1] && !path.isAbsolute(matches[1])) {
 			lines[i] = lines[i].replace(matches[1], path.join(cwd, matches[1]));
 		}
@@ -288,7 +288,7 @@ export function expandFilePathInOutput(output: string, cwd: string): string {
 export function expandFilePathInErrorOutput(output: string, cwd: string, isGop: boolean, modPath: string): string {
 	const lines = output.split('\n');
 	for (let i = 0; i < lines.length; i++) {
-		const matches = lines[i].match(/\s*(\S+\.(go|gop)):(\d+):/);
+		const matches = lines[i].match(/\s*(\S+\.(go|gop|gox)):(\d+):/);
 		if (matches && matches[1]) {
 			const file = matches[1];
 			const fileExt = path.extname(file);
@@ -305,7 +305,7 @@ export function expandFilePathInErrorOutput(output: string, cwd: string, isGop: 
 						outputDir = modPath;
 					}
 					absoluteFilePath = path.join(outputDir, file);
-				} else if (fileExt === '.gop') absoluteFilePath = path.join(modPath, file);
+				} else if (['.gop', '.gox'].includes(fileExt)) absoluteFilePath = path.join(modPath, file);
 			}
 			lines[i] = lines[i].replace(file, absoluteFilePath);
 		}
