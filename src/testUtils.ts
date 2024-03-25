@@ -24,7 +24,8 @@ import {
 	getEnvPath,
 	expandFilePathInOutput,
 	getCurrentGoRoot,
-	getCurrentGoWorkspaceFromGOPATH
+	getCurrentGoWorkspaceFromGOPATH,
+	expandFilePathInErrorOutput
 } from './utils/pathUtils';
 import { killProcessTree } from './utils/processUtils';
 import { GoExtensionContext } from './context';
@@ -313,7 +314,6 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 
 	outputChannel.appendLine(['Running tool:', goRuntimePath, ...outArgs].join(' '));
 	outputChannel.appendLine('');
-	outputChannel.appendLine('isgop:' + testconfig.isGop);
 	let testResult = false;
 	try {
 		testResult = await new Promise<boolean>(async (resolve, reject) => {
@@ -345,17 +345,19 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 					testResultLines.forEach((line) => outputChannel.appendLine(line));
 				}
 			});
-
-			// When go+ test output error occurs, the path thrown by cl is relative to the project root directory
-			const errOutputDir = testconfig.isGop
-				? (await getModFolderPath(vscode.Uri.file(testconfig.dir), true)) || testconfig.dir
-				: testconfig.dir;
-
+			const modPath = (await getModFolderPath(vscode.Uri.file(testconfig.dir), true)) || testconfig.dir;
 			// go test emits build errors on stderr, which contain paths relative to the cwd
 			errBuf.onLine((line) => {
-				return outputChannel.appendLine(expandFilePathInOutput(line, errOutputDir));
+				outputChannel.appendLine(
+					expandFilePathInErrorOutput(line, testconfig.dir, !!testconfig.isGop, modPath)
+				);
 			});
-			errBuf.onDone((last) => last && outputChannel.appendLine(expandFilePathInOutput(last, testconfig.dir)));
+			errBuf.onDone((last) => {
+				last &&
+					outputChannel.appendLine(
+						expandFilePathInErrorOutput(last, testconfig.dir, !!testconfig.isGop, modPath)
+					);
+			});
 
 			tp.stdout.on('data', (chunk) => outBuf.append(chunk.toString()));
 			tp.stderr.on('data', (chunk) => errBuf.append(chunk.toString()));
