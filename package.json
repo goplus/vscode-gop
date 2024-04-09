@@ -106,6 +106,7 @@
     "workspaceContains:**/*.gmx",
     "workspaceContains:**/*.gox",
     "workspaceContains:**/*.gsh",
+    "workspaceContains:**/*.yap",
     "onDebugInitialConfigurations",
     "onDebugResolve:go",
     "onDebugResolve:gop",
@@ -146,7 +147,8 @@
           ".rdx",
           ".gmx",
           ".gox",
-          ".gsh"
+          ".gsh",
+          ".yap"
         ],
         "aliases": [
           "Goplus"
