@@ -15,6 +15,7 @@ import { GoDocumentSymbolProvider } from './goDocumentSymbols';
 import { getBenchmarkFunctions, getTestFunctions } from './testUtils';
 import { GoExtensionContext } from './context';
 import { GO_MODE, GOP_MODE } from './goMode';
+import path = require('path');
 
 export class GoRunTestCodeLensProvider extends GoBaseCodeLensProvider {
 	static activate(ctx: vscode.ExtensionContext, goCtx: GoExtensionContext) {
@@ -51,7 +52,7 @@ export class GoRunTestCodeLensProvider extends GoBaseCodeLensProvider {
 			!codelensEnabled ||
 			(!document.fileName.endsWith('_test.go') &&
 				!document.fileName.endsWith('_test.gop') &&
-				!document.fileName.endsWith('_ytest.gox'))
+				!document.fileName.endsWith('test.gox'))
 		) {
 			return [];
 		}
@@ -72,6 +73,19 @@ export class GoRunTestCodeLensProvider extends GoBaseCodeLensProvider {
 		const pkg = symbols[0];
 		if (!pkg) {
 			return [];
+		}
+		const file = path.parse(document.fileName);
+		if (!document.fileName.endsWith('.go') && file.name.endsWith('test')) {
+			// get_test.gox -> classname:get
+			// get_ytest.gox -> classname:get
+			const classname = file.name.replace(/(_test|_ytest)$/, '');
+			const testFuncSymbolName = `(*case_${classname}).Main`; // "(*case_get).Main" determine is test
+			const isTest = pkg.children.some((sym) => {
+				return sym.kind === vscode.SymbolKind.Method && sym.name === testFuncSymbolName;
+			});
+			if (!isTest) {
+				return [];
+			}
 		}
 		const range = pkg.range;
 		const packageCodeLens = [
