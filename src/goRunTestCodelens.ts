@@ -74,16 +74,15 @@ export class GoRunTestCodeLensProvider extends GoBaseCodeLensProvider {
 		if (!pkg) {
 			return [];
 		}
-		const file = path.parse(document.fileName);
-		if (!document.fileName.endsWith('.go') && file.name.endsWith('test')) {
-			// get_test.gox -> classname:get
-			// get_ytest.gox -> classname:get
-			const classname = file.name.replace(/(_test|_ytest)$/, '');
-			const testFuncSymbolName = `(*case_${classname}).Main`; // "(*case_get).Main" determine is test
-			const isTest = pkg.children.some((sym) => {
-				return sym.kind === vscode.SymbolKind.Method && sym.name === testFuncSymbolName;
-			});
-			if (!isTest) {
+		if (document.fileName.endsWith('test.gox')) {
+			if (
+				!pkg.children.some(
+					(sym) =>
+						sym.kind === vscode.SymbolKind.Method &&
+						sym.name.startsWith('(*case') &&
+						sym.name.endsWith('TestMain')
+				)
+			) {
 				return [];
 			}
 		}
