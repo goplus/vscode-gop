@@ -345,7 +345,10 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 					testResultLines.forEach((line) => outputChannel.appendLine(line));
 				}
 			});
-			const modPath = (await getModFolderPath(vscode.Uri.file(testconfig.dir), true)) || testconfig.dir;
+			const modPath =
+				testconfig.isMod && testconfig.isGop
+					? (await getModFolderPath(vscode.Uri.file(testconfig.dir), true)) || testconfig.dir
+					: testconfig.dir;
 			// go test emits build errors on stderr, which contain paths relative to the cwd
 			errBuf.onLine((line) => {
 				outputChannel.appendLine(
