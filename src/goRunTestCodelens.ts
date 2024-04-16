@@ -15,7 +15,6 @@ import { GoDocumentSymbolProvider } from './goDocumentSymbols';
 import { getBenchmarkFunctions, getTestFunctions } from './testUtils';
 import { GoExtensionContext } from './context';
 import { GO_MODE, GOP_MODE } from './goMode';
-import path = require('path');
 
 export class GoRunTestCodeLensProvider extends GoBaseCodeLensProvider {
 	static activate(ctx: vscode.ExtensionContext, goCtx: GoExtensionContext) {
@@ -48,12 +47,7 @@ export class GoRunTestCodeLensProvider extends GoBaseCodeLensProvider {
 		const config = getGoConfig(document.uri);
 		const codeLensConfig = config.get<{ [key: string]: any }>('enableCodeLens');
 		const codelensEnabled = codeLensConfig ? codeLensConfig['runtest'] : false;
-		if (
-			!codelensEnabled ||
-			(!document.fileName.endsWith('_test.go') &&
-				!document.fileName.endsWith('_test.gop') &&
-				!document.fileName.endsWith('test.gox'))
-		) {
+		if (!codelensEnabled || (!document.fileName.endsWith('_test.go') && !document.fileName.endsWith('_test.gop'))) {
 			return [];
 		}
 
@@ -73,18 +67,6 @@ export class GoRunTestCodeLensProvider extends GoBaseCodeLensProvider {
 		const pkg = symbols[0];
 		if (!pkg) {
 			return [];
-		}
-		if (document.fileName.endsWith('test.gox')) {
-			if (
-				!pkg.children.some(
-					(sym) =>
-						sym.kind === vscode.SymbolKind.Method &&
-						sym.name.startsWith('(*case') &&
-						sym.name.endsWith('TestMain')
-				)
-			) {
-				return [];
-			}
 		}
 		const range = pkg.range;
 		const packageCodeLens = [
