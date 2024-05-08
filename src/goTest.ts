@@ -48,7 +48,11 @@ async function _testAtCursor(
 	if (!editor) {
 		throw new NotFoundError('No editor is active.');
 	}
-	if (!editor.document.fileName.endsWith('_test.go') && !editor.document.fileName.endsWith('_test.gop')) {
+	if (
+		!editor.document.fileName.endsWith('_test.go') &&
+		!editor.document.fileName.endsWith('_test.gop') &&
+		!editor.document.fileName.endsWith('test.gox')
+	) {
 		throw new NotFoundError('No tests found. Current file is not a test file.');
 	}
 
@@ -210,9 +214,8 @@ async function runTestAtCursor(
 	if (cmd !== 'benchmark' && extractInstanceTestName(testFunctionName)) {
 		testConfigFns.push(...findAllTestSuiteRuns(editor.document, testFunctions).map((t) => t.name));
 	}
-
 	const isMod = await isModSupported(editor.document.uri);
-	const isGop = editor.document.fileName.endsWith('.gop'); // goxls: isGop
+	const isGop = editor.document.fileName.endsWith('.gop') || editor.document.fileName.endsWith('.gox'); // goxls: isGop
 	const testConfig: TestConfig = {
 		goConfig,
 		dir: path.dirname(editor.document.fileName),
@@ -381,7 +384,11 @@ export function testCurrentFile(isBenchmark: boolean, getConfig = getGoConfig): 
 			vscode.window.showInformationMessage('No editor is active.');
 			return false;
 		}
-		if (!editor.document.fileName.endsWith('_test.go') && !editor.document.fileName.endsWith('_test.gop')) {
+		if (
+			!editor.document.fileName.endsWith('_test.go') &&
+			!editor.document.fileName.endsWith('_test.gop') &&
+			!editor.document.fileName.endsWith('test.gox')
+		) {
 			vscode.window.showInformationMessage('No tests found. Current file is not a test file.');
 			return false;
 		}
