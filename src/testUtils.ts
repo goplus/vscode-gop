@@ -18,12 +18,14 @@ import { getCurrentPackage } from './goModules';
 import { GoDocumentSymbolProvider } from './goDocumentSymbols';
 import { getNonVendorPackages } from './goPackages';
 import { getBinPath, getCurrentGoPath, getTempFilePath, LineBuffer, resolvePath } from './util';
+import { getModFolderPath } from './goModules';
 import { parseEnvFile } from './utils/envUtils';
 import {
 	getEnvPath,
 	expandFilePathInOutput,
 	getCurrentGoRoot,
-	getCurrentGoWorkspaceFromGOPATH
+	getCurrentGoWorkspaceFromGOPATH,
+	expandFilePathInErrorOutput
 } from './utils/pathUtils';
 import { killProcessTree } from './utils/processUtils';
 import { GoExtensionContext } from './context';
@@ -312,7 +314,6 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 
 	outputChannel.appendLine(['Running tool:', goRuntimePath, ...outArgs].join(' '));
 	outputChannel.appendLine('');
-
 	let testResult = false;
 	try {
 		testResult = await new Promise<boolean>(async (resolve, reject) => {
@@ -344,10 +345,22 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 					testResultLines.forEach((line) => outputChannel.appendLine(line));
 				}
 			});
-
+			const modPath =
+				testconfig.isMod && testconfig.isGop
+					? (await getModFolderPath(vscode.Uri.file(testconfig.dir), true)) || testconfig.dir
+					: testconfig.dir;
 			// go test emits build errors on stderr, which contain paths relative to the cwd
-			errBuf.onLine((line) => outputChannel.appendLine(expandFilePathInOutput(line, testconfig.dir)));
-			errBuf.onDone((last) => last && outputChannel.appendLine(expandFilePathInOutput(last, testconfig.dir)));
+			errBuf.onLine((line) => {
+				outputChannel.appendLine(
+					expandFilePathInErrorOutput(line, testconfig.dir, !!testconfig.isGop, modPath)
+				);
+			});
+			errBuf.onDone((last) => {
+				last &&
+					outputChannel.appendLine(
+						expandFilePathInErrorOutput(last, testconfig.dir, !!testconfig.isGop, modPath)
+					);
+			});
 
 			tp.stdout.on('data', (chunk) => outBuf.append(chunk.toString()));
 			tp.stderr.on('data', (chunk) => errBuf.append(chunk.toString()));

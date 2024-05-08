@@ -276,3 +276,39 @@ export function expandFilePathInOutput(output: string, cwd: string): string {
 	}
 	return lines.join('\n');
 }
+
+/**
+ * This function accepts the error output of goptest or gotest and converts any relative file paths within it to absolute file paths.
+ * @param output
+ * @param cwd
+ * @param isGop
+ * @param modPath
+ * @returns
+ */
+export function expandFilePathInErrorOutput(output: string, cwd: string, isGop: boolean, modPath: string): string {
+	const lines = output.split('\n');
+	for (let i = 0; i < lines.length; i++) {
+		const matches = lines[i].match(/\s*(\S+\.(go|gop|gox)):(\d+):/);
+		if (matches && matches[1]) {
+			const file = matches[1];
+			const fileExt = path.extname(file);
+			let absoluteFilePath = '';
+			if (path.isAbsolute(file)) {
+				absoluteFilePath = file;
+			} else {
+				// When go+ test output error occurs, the path thrown by cl is relative to the project root directory
+				if (fileExt === '.go') {
+					let outputDir = cwd;
+					if (isGop && path.dirname(file) !== '.') {
+						// If it is the output of goptest and the file path is not relative to the current directory,
+						// update outputDir to modPath as the output directory is relative to the module path
+						outputDir = modPath;
+					}
+					absoluteFilePath = path.join(outputDir, file);
+				} else if (['.gop', '.gox'].includes(fileExt)) absoluteFilePath = path.join(modPath, file);
+			}
+			lines[i] = lines[i].replace(file, absoluteFilePath);
+		}
+	}
+	return lines.join('\n');
+}
