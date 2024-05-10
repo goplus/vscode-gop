@@ -339,36 +339,39 @@ export function testCurrentPackage(isBenchmark: boolean): CommandFactory {
  *
  * @param goConfig Configuration for the Go extension.
  */
-export const testWorkspace: CommandFactory = () => (args: any) => {
-	const goConfig = getGoConfig();
-	if (!vscode.workspace.workspaceFolders?.length) {
-		vscode.window.showInformationMessage('No workspace is open to run tests.');
-		return;
-	}
-	let workspaceUri: vscode.Uri | undefined = vscode.workspace.workspaceFolders[0].uri;
-	if (
-		vscode.window.activeTextEditor &&
-		vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri)
-	) {
-		workspaceUri = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri)!.uri;
-	}
+export function testWorkspace(ignoreTarget: boolean): CommandFactory {
+	return () => (args: any) => {
+		const goConfig = getGoConfig();
+		if (!vscode.workspace.workspaceFolders?.length) {
+			vscode.window.showInformationMessage('No workspace is open to run tests.');
+			return;
+		}
+		let workspaceUri: vscode.Uri | undefined = vscode.workspace.workspaceFolders[0].uri;
+		if (
+			vscode.window.activeTextEditor &&
+			vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri)
+		) {
+			workspaceUri = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri)!.uri;
+		}
 
-	const testConfig: TestConfig = {
-		goConfig,
-		dir: workspaceUri.fsPath,
-		flags: getTestFlags(goConfig, args),
-		includeSubDirectories: true
-	};
-	// Remember this config as the last executed test.
-	lastTestConfig = testConfig;
+		const testConfig: TestConfig = {
+			goConfig,
+			dir: workspaceUri.fsPath,
+			flags: getTestFlags(goConfig, args),
+			includeSubDirectories: true,
+			ignoreTarget
+		};
+		// Remember this config as the last executed test.
+		lastTestConfig = testConfig;
 
-	isModSupported(workspaceUri, true).then((isMod) => {
-		testConfig.isMod = isMod;
-		goTest(testConfig).then(null, (err) => {
-			console.error(err);
+		isModSupported(workspaceUri, true).then((isMod) => {
+			testConfig.isMod = isMod;
+			goTest(testConfig).then(null, (err) => {
+				console.error(err);
+			});
 		});
-	});
-};
+	};
+}
 
 /**
  * Runs all tests in the source of the active editor.

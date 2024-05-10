@@ -159,7 +159,8 @@ export async function activate(ctx: vscode.ExtensionContext): Promise<ExtensionA
 	registerCommand('gop.benchmark.package', commands.testCurrentPackage(true));
 	registerCommand('gop.test.file', commands.testCurrentFile(false));
 	registerCommand('gop.benchmark.file', commands.testCurrentFile(true));
-	registerCommand('gop.test.workspace', commands.testWorkspace);
+	registerCommand('gop.test.workspace', commands.testWorkspace(false));
+	registerCommand('gop.test', commands.testWorkspace(true));
 	registerCommand('gop.test.previous', commands.testPrevious);
 	registerCommand('gop.debug.previous', commands.debugPrevious);
 

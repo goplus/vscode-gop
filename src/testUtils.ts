@@ -91,6 +91,8 @@ export interface TestConfig {
 	isMod?: boolean;
 	//goxls: Whether this is _test.gop
 	isGop?: boolean;
+	// goxls: provider a no target go test
+	ignoreTarget?: boolean;
 	/**
 	 * Whether code coverage should be generated and applied.
 	 */
@@ -308,9 +310,11 @@ export async function goTest(testconfig: TestConfig): Promise<boolean> {
 
 	// compute test target package
 	const { targets, pkgMap, currentGoWorkspace } = await getTestTargetPackages(testconfig, outputChannel);
-
 	// generate full test args.
-	const { args, outArgs, tmpCoverPath, addJSONFlag } = computeTestCommand(testconfig, targets);
+	const { args, outArgs, tmpCoverPath, addJSONFlag } = computeTestCommand(
+		testconfig,
+		testconfig.ignoreTarget ? [] : targets
+	);
 
 	outputChannel.appendLine(['Running tool:', goRuntimePath, ...outArgs].join(' '));
 	outputChannel.appendLine('');
